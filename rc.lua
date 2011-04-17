@@ -210,64 +210,64 @@ for s = 1, screen.count() do
  				awful.button({ }, 1, function () awful.util.spawn_with_shell("/home/serg/scripts/awesome/awesome_calendar.sh") end) 
 			)	
 	)
--- {{{ CPU usage and temperature
-cpuicon = widget({ type = "imagebox" })
-cpuicon.image = image(beautiful.widget_cpu)
--- Initialize widgets
-cpugraph  = awful.widget.graph()
-tzswidget = widget({ type = "textbox" })
--- Graph properties
-cpugraph:set_width(40):set_height(16)
-cpugraph:set_background_color(beautiful.fg_off_widget)
-cpugraph:set_gradient_angle(0):set_gradient_colors({
-   beautiful.fg_end_widget, beautiful.fg_center_widget, beautiful.fg_widget
-    }) -- Register widgets
-vicious.register(cpugraph,  vicious.widgets.cpu,      "$1")
-vicious.register(tzswidget, vicious.widgets.thermal, " $1C", 19, "thermal_zone0")
--- }}}
+	-- {{{ CPU usage and temperature
+	cpuicon = widget({ type = "imagebox" })
+	cpuicon.image = image(beautiful.widget_cpu)
+	-- Initialize widgets
+	cpugraph  = awful.widget.graph()
+	tzswidget = widget({ type = "textbox" })
+	-- Graph properties
+	cpugraph:set_width(40):set_height(16)
+	cpugraph:set_background_color(beautiful.fg_off_widget)
+	cpugraph:set_gradient_angle(0):set_gradient_colors({
+   		beautiful.fg_end_widget, beautiful.fg_center_widget, beautiful.fg_widget
+    	}) -- Register widgets
+	vicious.register(cpugraph,  vicious.widgets.cpu,      "$1")
+	vicious.register(tzswidget, vicious.widgets.thermal, " $1C", 19, "thermal_zone0")
+	-- }}}
 	--
 	--
--- {{{ Memory usage
-memicon = widget({ type = "imagebox" })
-memicon.image = image(beautiful.widget_mem)
--- Initialize widget
-membar = awful.widget.progressbar()
--- Pogressbar properties
-membar:set_vertical(true):set_ticks(true)
-membar:set_height(16):set_width(8):set_ticks_size(1)
-membar:set_background_color(beautiful.fg_off_widget)
-membar:set_gradient_colors({ beautiful.fg_widget, beautiful.fg_center_widget, beautiful.fg_end_widget }) -- Register widget
-vicious.register(membar, vicious.widgets.mem, "$1", 13)
--- }}}
--- {{{ File system usage
-fsicon = widget({ type = "imagebox" })
-fsicon.image = image(beautiful.widget_fs)
--- Initialize widgets
-fs = {
+	-- {{{ Memory usage
+	memicon = widget({ type = "imagebox" })
+	memicon.image = image(beautiful.widget_mem)
+	-- Initialize widget
+	membar = awful.widget.progressbar()
+	-- Pogressbar properties
+	membar:set_vertical(true):set_ticks(true)
+	membar:set_height(16):set_width(8):set_ticks_size(1)
+	membar:set_background_color(beautiful.fg_off_widget)
+	membar:set_gradient_colors({ beautiful.fg_widget, beautiful.fg_center_widget, beautiful.fg_end_widget }) -- Register widget
+	vicious.register(membar, vicious.widgets.mem, "$1", 13)
+	-- }}}
+	-- {{{ File system usage
+	fsicon = widget({ type = "imagebox" })
+	fsicon.image = image(beautiful.widget_fs)
+	-- Initialize widgets
+	fs = {
 		r = awful.widget.progressbar(),
      		h = awful.widget.progressbar(), 
 	}
--- Progressbar properties
-for _, w in pairs(fs) do
-	w:set_vertical(true):set_ticks(true)
-        w:set_height(16):set_width(6):set_ticks_size(1)
-        w:set_border_color( beautiful.border_widget)
-        w:set_background_color( beautiful.fg_off_widget)
-        w:set_gradient_colors({ beautiful.fg_widget,
-        	beautiful.fg_center_widget, beautiful.fg_end_widget
-   	}) 
-	-- Register buttons
-    	w.widget:buttons(awful.util.table.join(
-     		awful.button({ }, 1, function () exec("pcmanfm", false) end)
-     	))
-end 
--- Enable caching
-vicious.cache(vicious.widgets.fs)
--- Register widgets
-vicious.register(fs.r, vicious.widgets.fs, "${/ used_p}",     599)
-vicious.register(fs.h, vicious.widgets.fs, "${/home used_p}", 599)
--- }}}
---}}}!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	-- Progressbar properties
+	for _, w in pairs(fs) do
+		w:set_vertical(true):set_ticks(true)
+	        w:set_height(16):set_width(6):set_ticks_size(1)
+        	w:set_border_color( beautiful.border_widget)
+	        w:set_background_color( beautiful.fg_off_widget)
+	        w:set_gradient_colors({ beautiful.fg_widget,
+        		beautiful.fg_center_widget, beautiful.fg_end_widget
+   		}) 
+		-- Register buttons
+    		w.widget:buttons(awful.util.table.join(
+     			awful.button({ }, 1, function () exec("pcmanfm", false) end)
+	     	))
+	end 
+	-- Enable caching
+	vicious.cache(vicious.widgets.fs)
+	-- Register widgets
+	vicious.register(fs.r, vicious.widgets.fs, "${/ used_p}",     599)
+	vicious.register(fs.h, vicious.widgets.fs, "${/home used_p}", 599)
+	-- }}}
+	--}}}!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     	mywibox[s].widgets = {
         	{
         		mylauncher,
