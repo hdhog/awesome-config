@@ -456,7 +456,23 @@ awful.rules.rules = {
 	client.add_signal("manage", function (c, startup)
     -- Add a titlebar
     -- awful.titlebar.add(c, { modkey = modkey })
+	--awful.hooks.property.register(function (c, prop)
+   	--	if c.titlebar == nil and awful.client.floating.get(c) then
+   	--		awful.titlebar.add(c, { modkey = modkey , height = "16"})
+   	--	elseif not awful.client.floating.get(c) then
+   	--		awful.titlebar.remove(c)
+   	--	end
+--	end)
+    if awful.client.floating.get(c) or awful.layout.get(c.screen) == awful.layout.suit.floating then
+	if   c.titlebar then 
+		awful.titlebar.remove(c)
+	else 
+		awful.titlebar.add(c, {modkey = modkey, height = "16"}) end
+	end
 
+--	if c.class == "Deadbeef" then
+--	       awful.titlebar.add(c, { modkey = modkey ,height = "16" })
+--	end
     -- Enable sloppy focus
     c:add_signal("mouse::enter", function(c)
         if awful.layout.get(c.screen) ~= awful.layout.suit.magnifier
