@@ -14,7 +14,7 @@ beautiful.init("/home/serg/.config/awesome/zenburn.lua")
 local exec   = awful.util.spawn
 local sexec  = awful.util.spawn_with_shell
 -- This is used later as the default terminal and editor to run.
-terminal	= "urxvt"
+terminal	= "urxvt -tr"
 editor 	 	= "vim"
 editor_cmd 	= terminal .. " -e " .. editor
 awesome.font 	= "Terminus 8"
@@ -445,6 +445,8 @@ awful.rules.rules = {
     { rule = { class = "Wicd-client.py"		}, properties = { floating = true 			} },
     { rule = { class = "Vacuum"			}, properties = { tag = tags[1][1] 			} },
     { rule = { class = "Pcmanfm" 		}, properties = { tag = tags[1][6]			} },
+    { rule = { class = "Keepassx"		}, properties = { floating = true			} },
+    { rule = { class = "Deadbeef"		}, properties = { floating = true 			} },
 }
 
 -- }}}
