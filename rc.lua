@@ -4,8 +4,10 @@ require("awful.autofocus")
 require("awful.rules")
 -- Theme handling library
 require("beautiful")
+require("markup")
 -- Notification library
 require("naughty")
+require("cal")
 require("vicious")
 require('freedesktop.menu')
 -- {{{ Variable definitions
@@ -202,14 +204,17 @@ for s = 1, screen.count() do
 	dateicon.image = image(beautiful.widget_date)
 	-- Initialize widget
 	datewidget = widget({ type = "textbox" })
+
+	cal.register(datewidget, beautiful.fg_focus)
+	cal.register(datewidget, markup.fg(beautiful.fg_focus,"<b>%s</b>"))
 	-- Register widget
 	vicious.register(datewidget, vicious.widgets.date, " %R ", 61)
 	-- Register buttons
-	datewidget:buttons(
- 			awful.util.table.join(
- 				awful.button({ }, 1, function () awful.util.spawn_with_shell("/home/serg/scripts/awesome/awesome_calendar.sh") end) 
-			)	
-	)
+--	datewidget:buttons(
+ --			awful.util.table.join(
+ --				awful.button({ }, 1, function () awful.util.spawn_with_shell("/home/serg/scripts/awesome/awesome_calendar.sh") end) 
+--			)	
+--	)
 	-- {{{ CPU usage and temperature
 	cpuicon = widget({ type = "imagebox" })
 	cpuicon.image = image(beautiful.widget_cpu)
@@ -278,8 +283,8 @@ for s = 1, screen.count() do
  	upicon = widget({ type = "imagebox" })
  	dnicon.image = image(beautiful.widget_net)
  	upicon.image = image(beautiful.widget_netup)
-	-- }}}
-	--}}}!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+--	--}}}!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     	mywibox[s].widgets = {
         	{
         		mylauncher,
@@ -294,8 +299,8 @@ for s = 1, screen.count() do
 		separator, membar.widget, memicon,
 		separator, fs.h.widget, fs.r.widget, fsicon,
 		separator, upicon,netwidget,dnicon,
-        	separator, s == 1 and mysystray or nil,
-        	mytasklist[s],
+	       	separator, s == 1 and mysystray or nil,
+		mytasklist[s],
         	layout = awful.widget.layout.horizontal.rightleft
     	}
 end
