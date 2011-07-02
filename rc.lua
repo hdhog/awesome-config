@@ -17,7 +17,7 @@ local sexec  = awful.util.spawn_with_shell
 terminal	= "urxvt -tr"
 editor 	 	= "vim"
 editor_cmd 	= terminal .. " -e " .. editor
-awesome.font 	= "Terminus 8"
+awesome.font 	= "Snap 8"
 -- Default modkey.
 -- Usually, Mod4 is the key with a logo between Control and Alt.
 -- If you do not like this or do not have such a key,
@@ -35,8 +35,8 @@ layouts =
     awful.layout.suit.tile.top,
     awful.layout.suit.fair,
     awful.layout.suit.fair.horizontal,
---  awful.layout.suit.spiral,
---  awful.layout.suit.spiral.dwindle,
+    awful.layout.suit.spiral,
+    awful.layout.suit.spiral.dwindle,
     awful.layout.suit.max,
 --  awful.layout.suit.max.fullscreen,
 --  awful.layout.suit.magnifier
@@ -156,7 +156,7 @@ for s = 1, screen.count() do
 	separator = widget({ type = "imagebox" })
 	separator.image = image( beautiful.widget_sep )
     	-- Create the wibox
-    	mywibox[s] = awful.wibox({ position = "top", screen = s , height=16})
+    	mywibox[s] = awful.wibox({ position = "top", screen = s , height=12})
     	-- Add widgets to the wibox - order matters
     	baticon = widget({ type = "imagebox" })
     	baticon.image = image(beautiful.widget_bat)
@@ -188,7 +188,7 @@ for s = 1, screen.count() do
 	volwidget = widget({ type = "textbox" })
 	-- Progressbar properties
 	volbar:set_vertical(true):set_ticks(true)
-	volbar:set_height(16):set_width(8):set_ticks_size(1)
+	volbar:set_height(12):set_width(8):set_ticks_size(1)
 	volbar:set_background_color(beautiful.fg_off_widget)
 	volbar:set_gradient_colors({ beautiful.fg_widget, beautiful.fg_center_widget, beautiful.fg_end_widget }) 
 	 -- Enable caching
@@ -217,7 +217,7 @@ for s = 1, screen.count() do
 	cpugraph  = awful.widget.graph()
 	tzswidget = widget({ type = "textbox" })
 	-- Graph properties
-	cpugraph:set_width(40):set_height(16)
+	cpugraph:set_width(40):set_height(12)
 	cpugraph:set_background_color(beautiful.fg_off_widget)
 	cpugraph:set_gradient_angle(0):set_gradient_colors({
    		beautiful.fg_end_widget, beautiful.fg_center_widget, beautiful.fg_widget
@@ -234,14 +234,16 @@ for s = 1, screen.count() do
 	membar = awful.widget.progressbar()
 	-- Pogressbar properties
 	membar:set_vertical(true):set_ticks(true)
-	membar:set_height(16):set_width(8):set_ticks_size(1)
+	membar:set_height(12):set_width(8):set_ticks_size(1)
 	membar:set_background_color(beautiful.fg_off_widget)
 	membar:set_gradient_colors({ beautiful.fg_widget, beautiful.fg_center_widget, beautiful.fg_end_widget }) -- Register widget
-	vicious.register(membar, vicious.widgets.mem, "$1", 13)
+	vicious.register(membar, vicious.widgets.mem, "$1", 12)
 	-- }}}
 	-- {{{ File system usage
 	fsicon = widget({ type = "imagebox" })
 	fsicon.image = image(beautiful.widget_fs)
+	local coverart_nf
+
 	-- Initialize widgets
 	fs = {
 		r = awful.widget.progressbar(),
@@ -250,7 +252,7 @@ for s = 1, screen.count() do
 	-- Progressbar properties
 	for _, w in pairs(fs) do
 		w:set_vertical(true):set_ticks(true)
-	        w:set_height(16):set_width(6):set_ticks_size(1)
+	        w:set_height(12):set_width(6):set_ticks_size(1)
         	w:set_border_color( beautiful.border_widget)
 	        w:set_background_color( beautiful.fg_off_widget)
 	        w:set_gradient_colors({ beautiful.fg_widget,
@@ -266,6 +268,16 @@ for s = 1, screen.count() do
 	-- Register widgets
 	vicious.register(fs.r, vicious.widgets.fs, "${/ used_p}",     599)
 	vicious.register(fs.h, vicious.widgets.fs, "${/home used_p}", 599)
+
+	--  Network usage widget
+	-- Initialize widget
+	netwidget = widget({ type = "textbox" })
+	-- Register widget
+	vicious.register(netwidget, vicious.widgets.net, '<span color="#CC9393">${ppp0 down_kb}</span> <span color="#7F9F7F">${ppp0 up_kb}</span>', 3)
+	dnicon = widget({ type = "imagebox" })
+ 	upicon = widget({ type = "imagebox" })
+ 	dnicon.image = image(beautiful.widget_net)
+ 	upicon.image = image(beautiful.widget_netup)
 	-- }}}
 	--}}}!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     	mywibox[s].widgets = {
@@ -281,7 +293,8 @@ for s = 1, screen.count() do
 		separator, tzswidget,cpugraph.widget, cpuicon,
 		separator, membar.widget, memicon,
 		separator, fs.h.widget, fs.r.widget, fsicon,
-        	separator, s == 1 and mysystray or nil,	
+		separator, upicon,netwidget,dnicon,
+        	separator, s == 1 and mysystray or nil,
         	mytasklist[s],
         	layout = awful.widget.layout.horizontal.rightleft
     	}
@@ -447,6 +460,9 @@ awful.rules.rules = {
     { rule = { class = "Pcmanfm" 		}, properties = { tag = tags[1][6]			} },
     { rule = { class = "Keepassx"		}, properties = { floating = true			} },
     { rule = { class = "Deadbeef"		}, properties = { floating = true 			} },
+    { rule = { class = "Rednotebook"		}, properties = { floating = true 			} },
+    { rule = { class = "Xarchiver"		}, properties = { floating = true			} },
+    { rule = { class = "Gnote"			}, properties = { floating = true 			} },
 }
 
 -- }}}
@@ -455,24 +471,15 @@ awful.rules.rules = {
 -- Signal function to execute when a new client appears.
 	client.add_signal("manage", function (c, startup)
     -- Add a titlebar
-    -- awful.titlebar.add(c, { modkey = modkey })
-	--awful.hooks.property.register(function (c, prop)
-   	--	if c.titlebar == nil and awful.client.floating.get(c) then
-   	--		awful.titlebar.add(c, { modkey = modkey , height = "16"})
-   	--	elseif not awful.client.floating.get(c) then
-   	--		awful.titlebar.remove(c)
-   	--	end
---	end)
-    if awful.client.floating.get(c) or awful.layout.get(c.screen) == awful.layout.suit.floating then
+    if awful.client.floating.get(c) 
+	    -- or awful.layout.get(c.screen) == awful.layout.suit.floating 
+then
 	if   c.titlebar then 
 		awful.titlebar.remove(c)
 	else 
 		awful.titlebar.add(c, {modkey = modkey, height = "16"}) end
 	end
 
---	if c.class == "Deadbeef" then
---	       awful.titlebar.add(c, { modkey = modkey ,height = "16" })
---	end
     -- Enable sloppy focus
     c:add_signal("mouse::enter", function(c)
         if awful.layout.get(c.screen) ~= awful.layout.suit.magnifier
