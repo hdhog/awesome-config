@@ -4,6 +4,6 @@ kbdd &
 mpd &
 wicd-client&
 parcellite &
-blueman-applet &
+#blueman-applet &
 #nm-applet &
 wmname LG3D &

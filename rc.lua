@@ -20,6 +20,7 @@ terminal	= "urxvt -tr"
 editor 	 	= "vim"
 editor_cmd 	= terminal .. " -e " .. editor
 awesome.font 	= "Snap 8"
+--size_hints_honor= "false"
 -- Default modkey.
 -- Usually, Mod4 is the key with a logo between Control and Alt.
 -- If you do not like this or do not have such a key,
@@ -205,7 +206,6 @@ for s = 1, screen.count() do
 	-- Initialize widget
 	datewidget = widget({ type = "textbox" })
 
-	cal.register(datewidget, beautiful.fg_focus)
 	cal.register(datewidget, markup.fg(beautiful.fg_focus,"<b>%s</b>"))
 	-- Register widget
 	vicious.register(datewidget, vicious.widgets.date, " %R ", 61)
@@ -321,7 +321,7 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "Right",  awful.tag.viewnext       ),
     awful.key({ modkey,           }, "Escape", awful.tag.history.restore),
 --{{{
-awful.key({ modkey, "Control" }, "l", function () awful.util.spawn("slimlock") end),
+awful.key({ modkey, "Control" }, "l", function () awful.util.spawn("slock") end),
 --}}}
 --{{{{
    awful.key({ }, "XF86AudioRaiseVolume", function () awful.util.spawn("amixer set Master 5%+") end),
