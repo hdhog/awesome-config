@@ -7,11 +7,13 @@ require("beautiful")
 require("markup")
 -- Notification library
 require("naughty")
+-- Виджет календаря
 require("cal")
 require("vicious")
+-- виджет меню приложений
 require('freedesktop.menu')
 -- {{{ Variable definitions
--- Themes define colours, icons, and wallpapers
+-- Путь до файла с темой.
 beautiful.init("/home/serg/.config/awesome/zenburn.lua")
 local exec   = awful.util.spawn
 local sexec  = awful.util.spawn_with_shell
@@ -20,15 +22,8 @@ terminal	= "urxvt -tr"
 editor 	 	= "vim"
 editor_cmd 	= terminal .. " -e " .. editor
 awesome.font 	= "Snap 8"
---size_hints_honor= "false"
--- Default modkey.
--- Usually, Mod4 is the key with a logo between Control and Alt.
--- If you do not like this or do not have such a key,
--- I suggest you to remap Mod4 to another key using xmodmap or other tools.
--- However, you can use another modifier like Mod1, but it may interact with others.
 modkey = "Mod4"
 
--- Table of layouts to cover with awful.layout.inc, order matters.
 layouts =
 {
     awful.layout.suit.floating,
@@ -70,26 +65,7 @@ myawesomemenu = {
 }
 table.insert(menu_items, { "awesome", myawesomemenu, beautiful.awesome_icon })
 table.insert(menu_items, { "open terminal", terminal, freedesktop.utils.lookup_icon({icon = 'terminal'}) })
---table.insert(menu_items, { "Debian", debian.menu.Debian_menu.Debian, freedesktop.utils.lookup_icon({ icon = 'debian-logo' }) })
---myofficemenu = {
---	{ "Libre Office Writer","libreoffice --writer"  },
---	{ "Document Viewer" , "evince" 			}
---}
 
---mydevelopmenu={
---	{ "NetBeans 6.9.1","/home/serg/netbeans-6.9.1/bin/netbeans" },
---	{ "Eagle" , "/home/serg/eagle-5.11.0/bin/eagle"},
---	{ "Qt Creator" , "qtcreator"}
---}
-
---mymainmenu = awful.menu({ 
---				items = { 
---							{ "Office", myofficemenu 				},
---							{ "Development", mydevelopmenu				},
---							{ "awesome", myawesomemenu, beautiful.awesome_icon 	},
-  --                                  			{ "terminal", terminal 					}
-    --                              	  	}
-      --                  	})
 mymainmenu = awful.menu.new({ items = menu_items, width = 150 })
 mylauncher = awful.widget.launcher({ image = image(beautiful.awesome_icon), menu = mymainmenu })
 -- }}}
@@ -191,7 +167,7 @@ for s = 1, screen.count() do
 	volwidget = widget({ type = "textbox" })
 	-- Progressbar properties
 	volbar:set_vertical(true):set_ticks(true)
-	volbar:set_height(12):set_width(8):set_ticks_size(1)
+	volbar:set_height(12):set_width(6):set_ticks_size(1)
 	volbar:set_background_color(beautiful.fg_off_widget)
 	volbar:set_gradient_colors({ beautiful.fg_widget, beautiful.fg_center_widget, beautiful.fg_end_widget }) 
 	 -- Enable caching
@@ -201,20 +177,14 @@ for s = 1, screen.count() do
 	vicious.register(volwidget, vicious.widgets.volume, " $1%", 2, "Master")
 	-- }}}
 	-- {{{ Date and time
-	dateicon = widget({ type = "imagebox" })
-	dateicon.image = image(beautiful.widget_date)
+--	dateicon = widget({ type = "imagebox" })
+--	dateicon.image = image(beautiful.widget_date)
 	-- Initialize widget
 	datewidget = widget({ type = "textbox" })
-
 	cal.register(datewidget, markup.fg(beautiful.fg_focus,"<b>%s</b>"))
 	-- Register widget
 	vicious.register(datewidget, vicious.widgets.date, " %R ", 61)
-	-- Register buttons
---	datewidget:buttons(
- --			awful.util.table.join(
- --				awful.button({ }, 1, function () awful.util.spawn_with_shell("/home/serg/scripts/awesome/awesome_calendar.sh") end) 
---			)	
---	)
+
 	-- {{{ CPU usage and temperature
 	cpuicon = widget({ type = "imagebox" })
 	cpuicon.image = image(beautiful.widget_cpu)
@@ -228,7 +198,7 @@ for s = 1, screen.count() do
    		beautiful.fg_end_widget, beautiful.fg_center_widget, beautiful.fg_widget
     	}) -- Register widgets
 	vicious.register(cpugraph,  vicious.widgets.cpu,      "$1")
-	vicious.register(tzswidget, vicious.widgets.thermal, " $1C", 19, "thermal_zone0")
+	vicious.register(tzswidget, vicious.widgets.thermal, " $1°C", 19, "thermal_zone0")
 	-- }}}
 	--
 	--
@@ -239,7 +209,7 @@ for s = 1, screen.count() do
 	membar = awful.widget.progressbar()
 	-- Pogressbar properties
 	membar:set_vertical(true):set_ticks(true)
-	membar:set_height(12):set_width(8):set_ticks_size(1)
+	membar:set_height(12):set_width(6):set_ticks_size(1)
 	membar:set_background_color(beautiful.fg_off_widget)
 	membar:set_gradient_colors({ beautiful.fg_widget, beautiful.fg_center_widget, beautiful.fg_end_widget }) -- Register widget
 	vicious.register(membar, vicious.widgets.mem, "$1", 12)
@@ -265,7 +235,7 @@ for s = 1, screen.count() do
    		}) 
 		-- Register buttons
     		w.widget:buttons(awful.util.table.join(
-     			awful.button({ }, 1, function () exec("pcmanfm", false) end)
+			     awful.button({ }, 1, function () exec("pcmanfm", false) end)
 	     	))
 	end 
 	-- Enable caching
@@ -283,6 +253,22 @@ for s = 1, screen.count() do
  	upicon = widget({ type = "imagebox" })
  	dnicon.image = image(beautiful.widget_net)
  	upicon.image = image(beautiful.widget_netup)
+	
+	hddtempicon = widget({ type = "imagebox" })
+	hddtempicon.image = image(beautiful.widget_temp)
+	-- темпаратура жесткого диска
+ 	hddtempwidget = widget({ type = "textbox" })
+  	vicious.register(hddtempwidget, vicious.widgets.hddtemp, "${/dev/sda} °C", 19)
+
+	mygmailicon = widget({type = "imagebox"})
+	mygmailicon.image = image (beautiful.widget_mail)
+	mygmail = widget({ type = "textbox" })
+	mygmail_t = awful.tooltip(mygmail)
+	vicious.register(mygmail, vicious.widgets.gmail,
+		function (widget, args)
+			mygmail_t:set_text(args["{subject}"])
+			return '<span color="white" weight="bold">'..args["{count}"]..'</span>'
+		end, 127)
 
 --	--}}}!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     	mywibox[s].widgets = {
@@ -297,7 +283,9 @@ for s = 1, screen.count() do
         	separator, volwidget,  volbar.widget, volicon,
 		separator, tzswidget,cpugraph.widget, cpuicon,
 		separator, membar.widget, memicon,
+		separator, hddtempwidget,hddtempicon,
 		separator, fs.h.widget, fs.r.widget, fsicon,
+		separator, mygmail,mygmailicon,
 		separator, upicon,netwidget,dnicon,
 	       	separator, s == 1 and mysystray or nil,
 		mytasklist[s],
@@ -324,8 +312,8 @@ globalkeys = awful.util.table.join(
 awful.key({ modkey, "Control" }, "l", function () awful.util.spawn("slock") end),
 --}}}
 --{{{{
-   awful.key({ }, "XF86AudioRaiseVolume", function () awful.util.spawn("amixer set Master 5%+") end),
-   awful.key({ }, "XF86AudioLowerVolume", function () awful.util.spawn("amixer set Master 5%-") end),
+   awful.key({ }, "XF86AudioRaiseVolume", function () awful.util.spawn("amixer set Master 2%+") end),
+   awful.key({ }, "XF86AudioLowerVolume", function () awful.util.spawn("amixer set Master 2%-") end),
    awful.key({ }, "XF86AudioMute", function () awful.util.spawn("amixer sset Master toggle") end),
 --}}}}
     awful.key({ modkey,           }, "j",
