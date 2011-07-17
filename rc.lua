@@ -248,7 +248,18 @@ for s = 1, screen.count() do
 	-- Initialize widget
 	netwidget = widget({ type = "textbox" })
 	-- Register widget
-	vicious.register(netwidget, vicious.widgets.net, '<span color="#CC9393">${ppp0 down_kb}</span> <span color="#7F9F7F">${ppp0 up_kb}</span>', 3)
+	vicious.register(netwidget, vicious.widgets.net,
+	function (widget, args)
+   		local down, up, text = args["{ppp0 down_kb}"], args["{ppp0 up_kb}"]
+   		if down ~= "0.0" or up ~= "0.0" then
+      			text = ('<span color="#CC9393">%s</span> <span color="#7F9F7F">%s</span>'):format(args["{ppp0 down_kb}"], args["{ppp0 up_kb}"])
+   		end
+		if text == nil then
+			text = '<span color="#CC9393">0.0</span> <span color="#7F9F7F">0.0</span>'
+		end
+   		return text
+	end, 5)
+
 	dnicon = widget({ type = "imagebox" })
  	upicon = widget({ type = "imagebox" })
  	dnicon.image = image(beautiful.widget_net)
@@ -258,7 +269,7 @@ for s = 1, screen.count() do
 	hddtempicon.image = image(beautiful.widget_temp)
 	-- темпаратура жесткого диска
  	hddtempwidget = widget({ type = "textbox" })
-  	vicious.register(hddtempwidget, vicious.widgets.hddtemp, "${/dev/sda} °C", 19)
+  	vicious.register(hddtempwidget, vicious.widgets.hddtemp, "${/dev/sda}°C", 19)
 
 	mygmailicon = widget({type = "imagebox"})
 	mygmailicon.image = image (beautiful.widget_mail)
@@ -267,7 +278,7 @@ for s = 1, screen.count() do
 	vicious.register(mygmail, vicious.widgets.gmail,
 		function (widget, args)
 			mygmail_t:set_text(args["{subject}"])
-			return '<span color="white" weight="bold">'..args["{count}"]..'</span>'
+			return '<span>'..args["{count}"]..'</span>'
 		end, 127)
 
 --	--}}}!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
