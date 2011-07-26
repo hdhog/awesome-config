@@ -295,7 +295,7 @@ for s = 1, screen.count() do
 		separator, tzswidget,cpugraph.widget, cpuicon,
 		separator, membar.widget, memicon,
 		separator, hddtempwidget,hddtempicon,
-		separator, fs.h.widget, fs.r.widget, ,fsicon,
+		separator, fs.h.widget, fs.r.widget, fsicon,
 		separator, mygmail,mygmailicon,
 		separator, upicon,netwidget,dnicon,
 	       	separator, s == 1 and mysystray or nil,
