@@ -250,9 +250,9 @@ for s = 1, screen.count() do
 	-- Register widget
 	vicious.register(netwidget, vicious.widgets.net,
 	function (widget, args)
-   		local down, up, text = args["{ppp0 down_kb}"], args["{ppp0 up_kb}"]
+   		local down, up, text = args["{wlan0 down_kb}"], args["{wlan0 up_kb}"]
    		if down ~= "0.0" or up ~= "0.0" then
-      			text = ('<span color="#CC9393">%s</span> <span color="#7F9F7F">%s</span>'):format(args["{ppp0 down_kb}"], args["{ppp0 up_kb}"])
+      			text = ('<span color="#CC9393">%s</span> <span color="#7F9F7F">%s</span>'):format(args["{wlan0 down_kb}"], args["{wlan0 up_kb}"])
    		end
 		if text == nil then
 			text = '<span color="#CC9393">0.0</span> <span color="#7F9F7F">0.0</span>'
@@ -279,7 +279,7 @@ for s = 1, screen.count() do
 		function (widget, args)
 			mygmail_t:set_text(args["{subject}"])
 			return '<span>'..args["{count}"]..'</span>'
-		end, 127)
+		end, 60)
 
 --	--}}}!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     	mywibox[s].widgets = {
