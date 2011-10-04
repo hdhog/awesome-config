@@ -2,7 +2,7 @@
 sleep 5
 kbdd &
 mpd &
-wicd-client&
+dbus-launch wicd-client&
 parcellite &
 #blueman-applet &
 #nm-applet &

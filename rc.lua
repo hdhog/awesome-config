@@ -12,6 +12,7 @@ require("cal")
 require("vicious")
 -- виджет меню приложений
 require('freedesktop.menu')
+require("awesompd/awesompd")
 -- {{{ Variable definitions
 -- Путь до файла с темой.
 beautiful.init("/home/serg/.config/awesome/zenburn.lua")
@@ -113,6 +114,46 @@ mytasklist.buttons = awful.util.table.join(
                                               if client.focus then client.focus:raise() end
                                           end))
 -- вынести создание виджетов из цикла
+musicwidget = awesompd:create() -- Create awesompd widget
+  musicwidget.font = "Snap 8" -- Set widget font 
+  musicwidget.scrolling = true -- If true, the text in the widget will be scrolled
+  musicwidget.output_size = 30 -- Set the size of widget in symbols
+  musicwidget.update_interval = 5 -- Set the update interval in seconds
+  -- Set the folder where icons are located (change username to your login name)
+  musicwidget.path_to_icons = "/home/serg/.config/awesome/icons" 
+  -- Set the default music format for Jamendo streams. You can change
+  -- this option on the fly in awesompd itself.
+  -- possible formats: awesompd.FORMAT_MP3, awesompd.FORMAT_OGG
+  musicwidget.jamendo_format = awesompd.FORMAT_MP3
+  -- If true, song notifications for Jamendo tracks and local tracks will also contain
+  -- album cover image.
+  musicwidget.show_album_cover = true
+  -- Specify how big in pixels should an album cover be. Maximum value
+  -- is 100.
+  musicwidget.album_cover_size = 90
+  -- This option is necessary if you want the album covers to be shown
+  -- for your local tracks.
+  musicwidget.mpd_config = "/home/serg/.mpdconf"
+  -- Specify the browser you use so awesompd can open links from
+  -- Jamendo in it.
+  musicwidget.browser = "chromium-mem"
+  -- Specify decorators on the left and the right side of the
+  -- widget. Or just leave empty strings if you decorate the widget
+  -- from outside.
+  musicwidget.ldecorator = " "
+  musicwidget.rdecorator = " "
+  -- Set all the servers to work with (here can be any servers you use)
+  musicwidget.servers = {
+     { server = "localhost",
+          port = 6600 } }
+  -- Set the buttons of the widget
+  musicwidget:register_buttons({ { "", awesompd.MOUSE_LEFT, musicwidget:command_toggle() },
+      			       { "Control", awesompd.MOUSE_SCROLL_UP, musicwidget:command_prev_track() },
+ 			       { "Control", awesompd.MOUSE_SCROLL_DOWN, musicwidget:command_next_track() },
+ 			       { "", awesompd.MOUSE_SCROLL_UP, musicwidget:command_volume_up() },
+ 			       { "", awesompd.MOUSE_SCROLL_DOWN, musicwidget:command_volume_down() },
+ 			       { "", awesompd.MOUSE_RIGHT, musicwidget:command_show_menu() } })
+  musicwidget:run() -- After all configuration is done, run the widget
 for s = 1, screen.count() do
     	-- Create a promptbox for each screen
     	mypromptbox[s] = awful.widget.prompt({ layout = awful.widget.layout.horizontal.leftright })
@@ -181,7 +222,7 @@ for s = 1, screen.count() do
 --	dateicon.image = image(beautiful.widget_date)
 	-- Initialize widget
 	datewidget = widget({ type = "textbox" })
-	cal.register(datewidget, markup.fg(beautiful.fg_focus,"<b>%s</b>"))
+	cal.register(datewidget, markup.fg(beautiful.fg_focus,'<span color="#ffffff"><b>%s</b></span>'))
 	-- Register widget
 	vicious.register(datewidget, vicious.widgets.date, " %R ", 61)
 
@@ -298,9 +339,11 @@ for s = 1, screen.count() do
 		separator, fs.h.widget, fs.r.widget, fsicon,
 		separator, mygmail,mygmailicon,
 		separator, upicon,netwidget,dnicon,
+		--separator, musicwidget.widget,
 	       	separator, s == 1 and mysystray or nil,
-		mytasklist[s],
-        	layout = awful.widget.layout.horizontal.rightleft
+		separator, musicwidget.widget,
+		--mytasklist[s],
+        	separator,layout = awful.widget.layout.horizontal.rightleft
     	}
 end
 -- }}}!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -323,6 +366,10 @@ globalkeys = awful.util.table.join(
 awful.key({ modkey, "Control" }, "l", function () awful.util.spawn("slock") end),
 --}}}
 --{{{{
+   awful.key({ }, "XF86AudioNext",  musicwidget:command_next_track()),
+   awful.key({ }, "XF86AudioPrev",  musicwidget:command_prev_track()), 
+   awful.key({ }, "XF86AudioStop",  musicwidget:command_stop()), 
+   awful.key({ }, "XF86AudioPlay",  musicwidget:command_playpause()),
    awful.key({ }, "XF86AudioRaiseVolume", function () awful.util.spawn("amixer set Master 2%+") end),
    awful.key({ }, "XF86AudioLowerVolume", function () awful.util.spawn("amixer set Master 2%-") end),
    awful.key({ }, "XF86AudioMute", function () awful.util.spawn("amixer sset Master toggle") end),
@@ -473,11 +520,9 @@ awful.rules.rules = {
 
 -- {{{ Signals
 -- Signal function to execute when a new client appears.
-	client.add_signal("manage", function (c, startup)
-    -- Add a titlebar
-    if awful.client.floating.get(c) 
-	    -- or awful.layout.get(c.screen) == awful.layout.suit.floating 
-then
+client.add_signal("manage", function (c, startup)
+    -- dd a titlebar
+    if awful.client.floating.get(c) then
 	if   c.titlebar then 
 		awful.titlebar.remove(c)
 	else 
