@@ -154,6 +154,25 @@ musicwidget = awesompd:create() -- Create awesompd widget
  			       { "", awesompd.MOUSE_SCROLL_DOWN, musicwidget:command_volume_down() },
  			       { "", awesompd.MOUSE_RIGHT, musicwidget:command_show_menu() } })
   musicwidget:run() -- After all configuration is done, run the widget
+  wifiwidget = widget({type = "textbox", name = "wifiwidget", align = "right" })
+  wifiicon = widget({ type = "imagebox" })
+  wifiicon.image = image(beautiful.widget_wifi)
+
+ function wifiInfo(adapter)
+     spacer = " "
+     local f = io.open("/sys/class/net/"..adapter.."/wireless/link")
+     local wifiStrength = f:read()
+     if wifiStrength == "0" then
+         wifiStrength = "Down"
+     else
+         wifiStrength = wifiStrength.."%"
+     end
+     wifiwidget.text = wifiStrength
+     f:close()
+ end
+ awful.hooks.timer.register(5, function()
+    wifiInfo("wlan0")
+ end)
 for s = 1, screen.count() do
     	-- Create a promptbox for each screen
     	mypromptbox[s] = awful.widget.prompt({ layout = awful.widget.layout.horizontal.leftright })
@@ -339,6 +358,7 @@ for s = 1, screen.count() do
 		separator, fs.h.widget, fs.r.widget, fsicon,
 		separator, mygmail,mygmailicon,
 		separator, upicon,netwidget,dnicon,
+		separator, wifiwidget,wifiicon,
 		--separator, musicwidget.widget,
 	       	separator, s == 1 and mysystray or nil,
 		separator, musicwidget.widget,
@@ -549,6 +569,11 @@ client.add_signal("manage", function (c, startup)
         end
     end
 end)
+os.execute("kbdd &")
+os.execute("mpd &")
+os.execute("parcellite &")
+--os.execute("nm-applet &")
+os.execute("wmname LG3D &")
 
 client.add_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.add_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
