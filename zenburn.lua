@@ -9,7 +9,7 @@
 theme = {}
 theme.confdir       = awful.util.getdir("config")
 --theme.wallpaper_cmd = { "/usr/bin/nitrogen --restore" }
-theme.wallpaper_cmd = { "awsetbg /usr/share/awesome/themes/zenburn/zenburn-background.png" }
+theme.wallpaper_cmd = { "awsetbg /home/serg/.config/awesome/gerb.jpg" }
 -- }}}
 
 

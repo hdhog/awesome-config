@@ -259,9 +259,6 @@ for s = 1, screen.count() do
     	}) -- Register widgets
 	vicious.register(cpugraph,  vicious.widgets.cpu,      "$1")
 	vicious.register(tzswidget, vicious.widgets.thermal, " $1°C", 19, "thermal_zone0")
-	-- }}}
-	--
-	--
 	-- {{{ Memory usage
 	memicon = widget({ type = "imagebox" })
 	memicon.image = image(beautiful.widget_mem)
@@ -359,10 +356,8 @@ for s = 1, screen.count() do
 		separator, mygmail,mygmailicon,
 		separator, upicon,netwidget,dnicon,
 		separator, wifiwidget,wifiicon,
-		--separator, musicwidget.widget,
 	       	separator, s == 1 and mysystray or nil,
 		separator, musicwidget.widget,
-		--mytasklist[s],
         	separator,layout = awful.widget.layout.horizontal.rightleft
     	}
 end
@@ -572,7 +567,7 @@ end)
 os.execute("kbdd &")
 os.execute("mpd &")
 os.execute("parcellite &")
---os.execute("nm-applet &")
+os.execute("nm-applet &")
 os.execute("wmname LG3D &")
 
 client.add_signal("focus", function(c) c.border_color = beautiful.border_focus end)
