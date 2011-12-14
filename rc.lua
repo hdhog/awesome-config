@@ -341,7 +341,7 @@ for s = 1, screen.count() do
 --	--}}}!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     	mywibox[s].widgets = {
         	{
-        		mylauncher,
+                        --mylauncher,
         		mytaglist[s],
         		mypromptbox[s],   	    
         		layout = awful.widget.layout.horizontal.leftright
@@ -355,7 +355,7 @@ for s = 1, screen.count() do
 		separator, fs.h.widget, fs.r.widget, fsicon,
 		separator, mygmail,mygmailicon,
 		separator, upicon,netwidget,dnicon,
-		separator, wifiwidget,wifiicon,
+		--separator, wifiwidget,wifiicon,
 	       	separator, s == 1 and mysystray or nil,
 		separator, musicwidget.widget,
         	separator,layout = awful.widget.layout.horizontal.rightleft
@@ -518,8 +518,8 @@ awful.rules.rules = {
 		     
     { rule = { class = "MPlayer"  		}, properties = { floating = false , tag = tags[1][9]	} },
     { rule = { class = "feh" 			}, properties = { floating = true 			} },
-    { rule = { class = "gimp" 	  		}, properties = { floating = true 			} },
-    { rule = { class = "Chromium-browser"   	}, properties = { tag = tags[1][2], floating = false 	} },
+    { rule = { class = "gimp" 	  		}, properties = { floating = false 			} },
+    { rule = { class = "Chromium-browser"   	}, properties = { tag = tags[1][2]		 	} },
     { rule = { class = "Sonata"   		}, properties = { floating = true 			} },
     { rule = { class = "Wicd-client.py"		}, properties = { floating = true 			} },
     { rule = { class = "Vacuum"			}, properties = { tag = tags[1][1] 			} },
@@ -528,7 +528,8 @@ awful.rules.rules = {
     { rule = { class = "Deadbeef"		}, properties = { floating = true 			} },
     { rule = { class = "Rednotebook"		}, properties = { floating = true 			} },
     { rule = { class = "Xarchiver"		}, properties = { floating = true			} },
-    { rule = { class = "Gnote"			}, properties = { floating = true 			} },
+    { rule = { class = "Znotes"			}, properties = { floating = true 			} },
+    { rule = { class = "Qtcreator"		}, properties = { tag = tags[1][3] 			} },
 }
 
 -- }}}
@@ -564,10 +565,10 @@ client.add_signal("manage", function (c, startup)
         end
     end
 end)
-os.execute("kbdd &")
-os.execute("mpd &")
-os.execute("parcellite &")
-os.execute("nm-applet &")
+os.execute("pgrep kbdd > /dev/null || kbdd &")
+os.execute("pgrep mpd > /dev/null || mpd &")
+os.execute("pgrep parcellite > /dev/null || parcellite &")
+os.execute("pgrep nm-applet > /dev/null || nm-applet &")
 os.execute("wmname LG3D &")
 
 client.add_signal("focus", function(c) c.border_color = beautiful.border_focus end)
