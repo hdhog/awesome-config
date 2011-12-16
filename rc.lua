@@ -241,7 +241,7 @@ for s = 1, screen.count() do
 --	dateicon.image = image(beautiful.widget_date)
 	-- Initialize widget
 	datewidget = widget({ type = "textbox" })
-	cal.register(datewidget, markup.fg(beautiful.fg_focus,'<span color="#ffffff"><b>%s</b></span>'))
+	cal.register(datewidget, markup.fg(beautiful.fg_focus,'<span color="#ffi0000"><b>%s</b></span>'))
 	-- Register widget
 	vicious.register(datewidget, vicious.widgets.date, " %R ", 61)
 
