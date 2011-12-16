@@ -241,7 +241,7 @@ for s = 1, screen.count() do
 --	dateicon.image = image(beautiful.widget_date)
 	-- Initialize widget
 	datewidget = widget({ type = "textbox" })
-	cal.register(datewidget, markup.fg(beautiful.fg_focus,'<span color="#ffi0000"><b>%s</b></span>'))
+	cal.register(datewidget, markup.bg(beautiful.fg_normal,'<span color="#ff0000"><b>%s</b></span>'))
 	-- Register widget
 	vicious.register(datewidget, vicious.widgets.date, " %R ", 61)
 
@@ -337,7 +337,8 @@ for s = 1, screen.count() do
 			mygmail_t:set_text(args["{subject}"])
 			return '<span>'..args["{count}"]..'</span>'
 		end, 60)
-
+	testWidget = widget({ type = "imagebox" })
+ 	testWidget.image = image(beautiful.widget_org)
 --	--}}}!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     	mywibox[s].widgets = {
         	{
@@ -355,7 +356,7 @@ for s = 1, screen.count() do
 		separator, fs.h.widget, fs.r.widget, fsicon,
 		separator, mygmail,mygmailicon,
 		separator, upicon,netwidget,dnicon,
-		--separator, wifiwidget,wifiicon,
+		--separator, testWidget,
 	       	separator, s == 1 and mysystray or nil,
 		separator, musicwidget.widget,
         	separator,layout = awful.widget.layout.horizontal.rightleft
@@ -514,6 +515,8 @@ awful.rules.rules = {
                 border_color = beautiful.border_normal,
                 focus = true,
                 keys = clientkeys,
+		maximized_vertical   = false,
+		maximized_horizontal = false,
                 buttons = clientbuttons }},
 		     
     { rule = { class = "MPlayer"  		}, properties = { floating = false , tag = tags[1][9]	} },

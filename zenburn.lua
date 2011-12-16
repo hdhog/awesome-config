@@ -55,7 +55,8 @@ theme.mouse_finder_color = theme.fg_urgent
 -- }}}
 
 -- {{{ Tooltips
--- theme.tooltip_[font|opacity|fg_color|bg_color|border_width|border_color]
+--theme.tooltip_[font|opacity|fg_color|bg_color|border_width|border_color]
+theme.tooltip_bg_color=theme.bg_normal
 -- }}}
 
 -- {{{ Taglist and Tasklist

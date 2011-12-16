@@ -86,7 +86,6 @@ function register(mywidget, custom_current_day_format)
 		state = {month, year}
 		tooltip:set_text(string.format('<span font_desc="monospace">%s</span>', displayMonth(month, year, 2)))
 	end)
-
 	mywidget:buttons(awful.util.table.join(
 	awful.button({ }, 1, function()
 		switchMonth(-1)
