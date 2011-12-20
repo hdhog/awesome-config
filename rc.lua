@@ -569,7 +569,7 @@ client.add_signal("manage", function (c, startup)
     end
 end)
 os.execute("pgrep kbdd > /dev/null || kbdd &")
-os.execute("pgrep mpd > /dev/null || mpd &")
+os.execute("pgrep -x mpd > /dev/null || mpd &")
 os.execute("pgrep parcellite > /dev/null || parcellite &")
 os.execute("pgrep nm-applet > /dev/null || nm-applet &")
 os.execute("wmname LG3D &")
