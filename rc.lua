@@ -533,6 +533,7 @@ awful.rules.rules = {
     { rule = { class = "Xarchiver"		}, properties = { floating = true			} },
     { rule = { class = "Znotes"			}, properties = { floating = true 			} },
     { rule = { class = "Qtcreator"		}, properties = { tag = tags[1][3] 			} },
+    { rule = { class = "Plugin%-container" 	}, properties = { floating = true 			} },
 }
 
 -- }}}
