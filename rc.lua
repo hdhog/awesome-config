@@ -572,7 +572,7 @@ end)
 os.execute("pgrep kbdd > /dev/null || kbdd &")
 os.execute("pgrep -x mpd > /dev/null || mpd &")
 os.execute("pgrep parcellite > /dev/null || parcellite &")
-os.execute("pgrep nm-applet > /dev/null || sudo nm-applet &")
+os.execute("pgrep nm-applet > /dev/null || nm-applet &")
 os.execute("wmname LG3D &")
 
 client.add_signal("focus", function(c) c.border_color = beautiful.border_focus end)
