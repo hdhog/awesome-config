@@ -14,6 +14,15 @@ require("vicious")
 require('freedesktop.menu')
 require("awesompd/awesompd")
 -- {{{ Variable definitions
+function run_once(prg, args)
+  if not prg then
+    do return nil end
+  end
+  if not args then
+    args=""
+  end
+  awful.util.spawn_with_shell('pgrep -f -u $USER -x ' .. prg .. ' || (' .. prg .. ' ' .. args ..')')
+end
 -- Путь до файла с темой.
 beautiful.init("/home/serg/.config/awesome/zenburn.lua")
 local exec   = awful.util.spawn
@@ -24,6 +33,11 @@ editor 	 	= "vim"
 editor_cmd 	= terminal .. " -e " .. editor
 awesome.font 	= "Snap 8"
 modkey = "Mod4"
+-- автозапуск приложений
+run_once("kbdd")
+run_once("mpd")
+run_once("parcellite")
+run_once("nm-applet")
 
 layouts =
 {
@@ -37,11 +51,7 @@ layouts =
     awful.layout.suit.spiral,
     awful.layout.suit.spiral.dwindle,
     awful.layout.suit.max,
---  awful.layout.suit.max.fullscreen,
---  awful.layout.suit.magnifier
 }
--- }}}
-
 -- {{{ Tags
 -- Define a tag table which hold all screen tags.
 tags = {}
@@ -115,64 +125,47 @@ mytasklist.buttons = awful.util.table.join(
                                           end))
 -- вынести создание виджетов из цикла
 musicwidget = awesompd:create() -- Create awesompd widget
-  musicwidget.font = "Snap 8" -- Set widget font 
-  musicwidget.scrolling = true -- If true, the text in the widget will be scrolled
-  musicwidget.output_size = 30 -- Set the size of widget in symbols
-  musicwidget.update_interval = 5 -- Set the update interval in seconds
-  -- Set the folder where icons are located (change username to your login name)
-  musicwidget.path_to_icons = "/home/serg/.config/awesome/icons" 
-  -- Set the default music format for Jamendo streams. You can change
-  -- this option on the fly in awesompd itself.
-  -- possible formats: awesompd.FORMAT_MP3, awesompd.FORMAT_OGG
-  musicwidget.jamendo_format = awesompd.FORMAT_MP3
-  -- If true, song notifications for Jamendo tracks and local tracks will also contain
-  -- album cover image.
-  musicwidget.show_album_cover = true
-  -- Specify how big in pixels should an album cover be. Maximum value
-  -- is 100.
-  musicwidget.album_cover_size = 90
-  -- This option is necessary if you want the album covers to be shown
-  -- for your local tracks.
-  musicwidget.mpd_config = "/home/serg/.mpdconf"
-  -- Specify the browser you use so awesompd can open links from
-  -- Jamendo in it.
-  musicwidget.browser = "chromium-mem"
-  -- Specify decorators on the left and the right side of the
-  -- widget. Or just leave empty strings if you decorate the widget
-  -- from outside.
-  musicwidget.ldecorator = " "
-  musicwidget.rdecorator = " "
-  -- Set all the servers to work with (here can be any servers you use)
-  musicwidget.servers = {
-     { server = "localhost",
-          port = 6600 } }
-  -- Set the buttons of the widget
-  musicwidget:register_buttons({ { "", awesompd.MOUSE_LEFT, musicwidget:command_toggle() },
-      			       { "Control", awesompd.MOUSE_SCROLL_UP, musicwidget:command_prev_track() },
- 			       { "Control", awesompd.MOUSE_SCROLL_DOWN, musicwidget:command_next_track() },
- 			       { "", awesompd.MOUSE_SCROLL_UP, musicwidget:command_volume_up() },
- 			       { "", awesompd.MOUSE_SCROLL_DOWN, musicwidget:command_volume_down() },
- 			       { "", awesompd.MOUSE_RIGHT, musicwidget:command_show_menu() } })
-  musicwidget:run() -- After all configuration is done, run the widget
-  wifiwidget = widget({type = "textbox", name = "wifiwidget", align = "right" })
-  wifiicon = widget({ type = "imagebox" })
-  wifiicon.image = image(beautiful.widget_wifi)
+musicwidget.font = "Snap 8" -- Set widget font 
+musicwidget.scrolling = true -- If true, the text in the widget will be scrolled
+musicwidget.output_size = 30 -- Set the size of widget in symbols
+musicwidget.update_interval = 5 -- Set the update interval in seconds
+-- Set the folder where icons are located (change username to your login name)
+musicwidget.path_to_icons = "/home/serg/.config/awesome/icons" 
+-- Set the default music format for Jamendo streams. You can change
+-- this option on the fly in awesompd itself.
+-- possible formats: awesompd.FORMAT_MP3, awesompd.FORMAT_OGG
+musicwidget.jamendo_format = awesompd.FORMAT_MP3
+-- If true, song notifications for Jamendo tracks and local tracks will also contain
+-- album cover image.
+musicwidget.show_album_cover = true
+-- Specify how big in pixels should an album cover be. Maximum value
+-- is 100.
+musicwidget.album_cover_size = 90
+-- This option is necessary if you want the album covers to be shown
+-- for your local tracks.
+musicwidget.mpd_config = "/home/serg/.mpdconf"
+-- Specify the browser you use so awesompd can open links from
+-- Jamendo in it.
+musicwidget.browser = "chromium"
+-- Specify decorators on the left and the right side of the
+-- widget. Or just leave empty strings if you decorate the widget
+-- from outside.
+musicwidget.ldecorator = " "
+musicwidget.rdecorator = " "
+-- Set all the servers to work with (here can be any servers you use)
+musicwidget.servers = { { server = "localhost", port = 6600 } }
+-- Set the buttons of the widget
+musicwidget:register_buttons({ 
+				{ "", awesompd.MOUSE_LEFT, musicwidget:command_toggle() },
+      			        { "Control", awesompd.MOUSE_SCROLL_UP, musicwidget:command_prev_track() },
+ 			        { "Control", awesompd.MOUSE_SCROLL_DOWN, musicwidget:command_next_track() },
+ 			        { "", awesompd.MOUSE_SCROLL_UP, musicwidget:command_volume_up() },
+ 			        { "", awesompd.MOUSE_SCROLL_DOWN, musicwidget:command_volume_down() },
+ 			        { "", awesompd.MOUSE_RIGHT, musicwidget:command_show_menu() } 
+			     })
+musicwidget:run() -- After all configuration is done, run the widget
 
- function wifiInfo(adapter)
-     spacer = " "
-     local f = io.open("/sys/class/net/"..adapter.."/wireless/link")
-     local wifiStrength = f:read()
-     if wifiStrength == "0" then
-         wifiStrength = "Down"
-     else
-         wifiStrength = wifiStrength.."%"
-     end
-     wifiwidget.text = wifiStrength
-     f:close()
- end
- awful.hooks.timer.register(5, function()
-    wifiInfo("wlan0")
- end)
+
 for s = 1, screen.count() do
     	-- Create a promptbox for each screen
     	mypromptbox[s] = awful.widget.prompt({ layout = awful.widget.layout.horizontal.leftright })
@@ -202,7 +195,6 @@ for s = 1, screen.count() do
     	batwidget = widget({ type = "textbox" })
     	vicious.register(batwidget, vicious.widgets.bat,"$2%", 60, "BAT0")
 	--{{{
-	-- Keyboard layout widget
 	-- для работы этого виджета нужно установить kbdd
 	kbdwidget = widget({type = "textbox", name = "kbdwidget"})
 	kbdwidget.border_width = 0
@@ -216,13 +208,11 @@ for s = 1, screen.count() do
 			local layout = data[2]
 			lts = {[0] = "En", [1] = "Ru"}
 			kbdwidget.text = " "..lts[layout].." "
-		end
-	)
+		end)
 
-	-- {{{ Volume level
+	-- {{{ Виджет управления громкостью
 	volicon = widget({ type = "imagebox" })
 	volicon.image = image(beautiful.widget_vol)
-	-- Initialize widgets
 	volbar    = awful.widget.progressbar()
 	volwidget = widget({ type = "textbox" })
 	-- Progressbar properties
@@ -236,52 +226,44 @@ for s = 1, screen.count() do
 	vicious.register(volbar,    vicious.widgets.volume,  "$1",  2, "Master")
 	vicious.register(volwidget, vicious.widgets.volume, " $1%", 2, "Master")
 	-- }}}
-	-- {{{ Date and time
---	dateicon = widget({ type = "imagebox" })
---	dateicon.image = image(beautiful.widget_date)
-	-- Initialize widget
+	
+	-- Виджет отображающий время и календарь
 	datewidget = widget({ type = "textbox" })
 	cal.register(datewidget, markup.bg(beautiful.fg_normal,'<span color="#ff0000"><b>%s</b></span>'))
-	-- Register widget
 	vicious.register(datewidget, vicious.widgets.date, " %R ", 61)
 
-	-- {{{ CPU usage and temperature
+	-- {{{ Загрука профессора и температура
 	cpuicon = widget({ type = "imagebox" })
 	cpuicon.image = image(beautiful.widget_cpu)
-	-- Initialize widgets
 	cpugraph  = awful.widget.graph()
 	tzswidget = widget({ type = "textbox" })
-	-- Graph properties
 	cpugraph:set_width(40):set_height(12)
 	cpugraph:set_background_color(beautiful.fg_off_widget)
 	cpugraph:set_gradient_angle(0):set_gradient_colors({
    		beautiful.fg_end_widget, beautiful.fg_center_widget, beautiful.fg_widget
-    	}) -- Register widgets
+    	}) 
 	vicious.register(cpugraph,  vicious.widgets.cpu,      "$1")
 	vicious.register(tzswidget, vicious.widgets.thermal, " $1°C", 19, "thermal_zone0")
-	-- {{{ Memory usage
+	--}}}
+	-- {{{ Использование памяти
 	memicon = widget({ type = "imagebox" })
 	memicon.image = image(beautiful.widget_mem)
-	-- Initialize widget
 	membar = awful.widget.progressbar()
-	-- Pogressbar properties
 	membar:set_vertical(true):set_ticks(true)
 	membar:set_height(12):set_width(6):set_ticks_size(1)
 	membar:set_background_color(beautiful.fg_off_widget)
 	membar:set_gradient_colors({ beautiful.fg_widget, beautiful.fg_center_widget, beautiful.fg_end_widget }) -- Register widget
 	vicious.register(membar, vicious.widgets.mem, "$1", 12)
 	-- }}}
-	-- {{{ File system usage
+	-- {{{ Использование фс
 	fsicon = widget({ type = "imagebox" })
 	fsicon.image = image(beautiful.widget_fs)
 	local coverart_nf
 
-	-- Initialize widgets
 	fs = {
 		r = awful.widget.progressbar(),
      		h = awful.widget.progressbar(), 
 	}
-	-- Progressbar properties
 	for _, w in pairs(fs) do
 		w:set_vertical(true):set_ticks(true)
 	        w:set_height(12):set_width(6):set_ticks_size(1)
@@ -290,21 +272,16 @@ for s = 1, screen.count() do
 	        w:set_gradient_colors({ beautiful.fg_widget,
         		beautiful.fg_center_widget, beautiful.fg_end_widget
    		}) 
-		-- Register buttons
     		w.widget:buttons(awful.util.table.join(
 			     awful.button({ }, 1, function () exec("pcmanfm", false) end)
 	     	))
 	end 
-	-- Enable caching
 	vicious.cache(vicious.widgets.fs)
-	-- Register widgets
 	vicious.register(fs.r, vicious.widgets.fs, "${/ used_p}",     599)
 	vicious.register(fs.h, vicious.widgets.fs, "${/home used_p}", 599)
-
-	--  Network usage widget
-	-- Initialize widget
+	--}}}
+	-- {{{ Виджет использования сети
 	netwidget = widget({ type = "textbox" })
-	-- Register widget
 	vicious.register(netwidget, vicious.widgets.net,
 	function (widget, args)
    		local down, up, text = args["{wlan0 down_kb}"], args["{wlan0 up_kb}"]
@@ -321,25 +298,23 @@ for s = 1, screen.count() do
  	upicon = widget({ type = "imagebox" })
  	dnicon.image = image(beautiful.widget_net)
  	upicon.image = image(beautiful.widget_netup)
+	--}}}
 	
+	-- {{{ Температура HDD
 	hddtempicon = widget({ type = "imagebox" })
 	hddtempicon.image = image(beautiful.widget_temp)
-	-- темпаратура жесткого диска
  	hddtempwidget = widget({ type = "textbox" })
   	vicious.register(hddtempwidget, vicious.widgets.hddtemp, "${/dev/sda}°C", 19)
-
+	--}}}
+	
+	--{{{ Gmail уведомления о почте
 	mygmailicon = widget({type = "imagebox"})
 	mygmailicon.image = image (beautiful.widget_mail)
 	mygmail = widget({ type = "textbox" })
-	mygmail_t = awful.tooltip(mygmail)
-	vicious.register(mygmail, vicious.widgets.gmail,
-		function (widget, args)
-			mygmail_t:set_text(args["{subject}"])
-			return '<span>'..args["{count}"]..'</span>'
-		end, 60)
-	testWidget = widget({ type = "imagebox" })
- 	testWidget.image = image(beautiful.widget_org)
---	--}}}!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	vicious.register(mygmail, vicious.widgets.gmail,"${count}",60)
+	--}}}
+	
+	--}}}!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     	mywibox[s].widgets = {
         	{
                         --mylauncher,
@@ -356,7 +331,6 @@ for s = 1, screen.count() do
 		separator, fs.h.widget, fs.r.widget, fsicon,
 		separator, mygmail,mygmailicon,
 		separator, upicon,netwidget,dnicon,
-		--separator, testWidget,
 	       	separator, s == 1 and mysystray or nil,
 		separator, musicwidget.widget,
         	separator,layout = awful.widget.layout.horizontal.rightleft
@@ -569,11 +543,6 @@ client.add_signal("manage", function (c, startup)
         end
     end
 end)
-os.execute("pgrep kbdd > /dev/null || kbdd &")
-os.execute("pgrep -x mpd > /dev/null || mpd &")
-os.execute("pgrep parcellite > /dev/null || parcellite &")
-os.execute("pgrep nm-applet > /dev/null || nm-applet &")
-os.execute("wmname LG3D &")
 
 client.add_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.add_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
