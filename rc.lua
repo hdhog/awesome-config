@@ -11,6 +11,7 @@ require("naughty")
 require("cal")
 require("vicious")
 -- виджет меню приложений
+require("blingbling")
 require('freedesktop.menu')
 require("awesompd/awesompd")
 -- {{{ Variable definitions
@@ -38,7 +39,8 @@ run_once("kbdd")
 run_once("mpd")
 run_once("parcellite")
 run_once("nm-applet")
-
+run_once("kwalletmanager	")
+--run_unce("wmname","LG3D")
 layouts =
 {
     awful.layout.suit.floating,
@@ -59,9 +61,9 @@ for s = 1, screen.count() do
     -- Each screen has its own tag table.
     tags[s] = awful.tag({ "1:im", "2:web", "3:dev", "4:doc", "5:term", "6:fm", 7, 8, "9:video" }, s, layouts[2])
 end
-	awful.tag.setncol(2, tags[1][1])
-	awful.tag.setnmaster (1, tags[1][1])
-	awful.tag.setmwfact (0.85, tags[1][1])
+awful.tag.setncol(2, tags[1][1])
+awful.tag.setnmaster (1, tags[1][1])
+awful.tag.setmwfact (0.85, tags[1][1])
 -- }}}
 
 -- {{{ Menu
@@ -74,6 +76,7 @@ myawesomemenu = {
    { "Restart", awesome.restart },
    { "Quit", awesome.quit }   
 }
+
 table.insert(menu_items, { "awesome", myawesomemenu, beautiful.awesome_icon })
 table.insert(menu_items, { "open terminal", terminal, freedesktop.utils.lookup_icon({icon = 'terminal'}) })
 
@@ -235,25 +238,25 @@ for s = 1, screen.count() do
 	-- {{{ Загрука профессора и температура
 	cpuicon = widget({ type = "imagebox" })
 	cpuicon.image = image(beautiful.widget_cpu)
-	cpugraph  = awful.widget.graph()
+	--cpugraph  = awful.widget.graph()
 	tzswidget = widget({ type = "textbox" })
-	cpugraph:set_width(40):set_height(12)
-	cpugraph:set_background_color(beautiful.fg_off_widget)
-	cpugraph:set_gradient_angle(0):set_gradient_colors({
-   		beautiful.fg_end_widget, beautiful.fg_center_widget, beautiful.fg_widget
-    	}) 
-	vicious.register(cpugraph,  vicious.widgets.cpu,      "$1")
+	--cpugraph:set_width(40):set_height(12)
+	--cpugraph:set_background_color(beautiful.fg_off_widget)
+	--cpugraph:set_gradient_angle(0):set_gradient_colors({
+                   --beautiful.fg_end_widget, beautiful.fg_center_widget, beautiful.fg_widget
+        --}) 
+	--vicious.register(cpugraph,  vicious.widgets.cpu,      "$1")
 	vicious.register(tzswidget, vicious.widgets.thermal, " $1°C", 19, "thermal_zone0")
 	--}}}
 	-- {{{ Использование памяти
 	memicon = widget({ type = "imagebox" })
 	memicon.image = image(beautiful.widget_mem)
-	membar = awful.widget.progressbar()
-	membar:set_vertical(true):set_ticks(true)
-	membar:set_height(12):set_width(6):set_ticks_size(1)
-	membar:set_background_color(beautiful.fg_off_widget)
-	membar:set_gradient_colors({ beautiful.fg_widget, beautiful.fg_center_widget, beautiful.fg_end_widget }) -- Register widget
-	vicious.register(membar, vicious.widgets.mem, "$1", 12)
+	--membar = awful.widget.progressbar()
+	--membar:set_vertical(true):set_ticks(true)
+	--membar:set_height(12):set_width(6):set_ticks_size(1)
+	--membar:set_background_color(beautiful.fg_off_widget)
+	--membar:set_gradient_colors({ beautiful.fg_widget, beautiful.fg_center_widget, beautiful.fg_end_widget }) -- Register widget
+	--vicious.register(membar, vicious.widgets.mem, "$1", 12)
 	-- }}}
 	-- {{{ Использование фс
 	fsicon = widget({ type = "imagebox" })
@@ -273,7 +276,7 @@ for s = 1, screen.count() do
         		beautiful.fg_center_widget, beautiful.fg_end_widget
    		}) 
     		w.widget:buttons(awful.util.table.join(
-			     awful.button({ }, 1, function () exec("pcmanfm", false) end)
+			     awful.button({ }, 1, function () exec("dolphin", false) end)
 	     	))
 	end 
 	vicious.cache(vicious.widgets.fs)
@@ -293,7 +296,7 @@ for s = 1, screen.count() do
 		end
    		return text
 	end, 5)
-
+ blingbling.popups.netstat(netwidget,{ title_color = beautiful.notify_font_color_1, established_color= beautiful.notify_font_color_3, listen_color=beautiful.notify_font_color_2})
 	dnicon = widget({ type = "imagebox" })
  	upicon = widget({ type = "imagebox" })
  	dnicon.image = image(beautiful.widget_net)
@@ -311,9 +314,84 @@ for s = 1, screen.count() do
 	mygmailicon = widget({type = "imagebox"})
 	mygmailicon.image = image (beautiful.widget_mail)
 	mygmail = widget({ type = "textbox" })
-	vicious.register(mygmail, vicious.widgets.gmail,"${count}",60)
-	--}}}
-	
+	vicious.register(mygmail, vicious.widgets.gmail,"${count}",120)
+	--}}}!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ --
+	 mycairograph=blingbling.classical_graph.new()
+	 mycairograph:set_height(12)
+	 mycairograph:set_width(65)
+	 mycairograph:set_tiles_color("#00000022")
+	 mycairograph:set_show_text(false)
+ 	 vicious.register(mycairograph, vicious.widgets.cpu,'$1',2)
+ --
+ mycore1=blingbling.progress_graph.new()
+ mycore1:set_height(12)
+ mycore1:set_width(6)
+ mycore1:set_filled(true)
+ mycore1:set_h_margin(1)
+ mycore1:set_filled_color("#00000033")
+ vicious.register(mycore1, vicious.widgets.cpu, "$2")
+ mycore2=blingbling.progress_graph.new()
+ mycore2:set_height(12)
+ mycore2:set_width(6)
+ mycore2:set_filled(true)
+ mycore2:set_h_margin(1)
+ mycore2:set_filled_color("#00000033")
+ vicious.register(mycore2, vicious.widgets.cpu, "$3")
+
+ mycore3=blingbling.progress_graph.new()
+ mycore3:set_height(12)
+ mycore3:set_width(6)
+ mycore3:set_filled(true)
+ mycore3:set_h_margin(1)
+ mycore3:set_filled_color("#00000033")
+ vicious.register(mycore3, vicious.widgets.cpu, "$4")
+
+ mycore4=blingbling.progress_graph.new()
+ mycore4:set_height(12)
+ mycore4:set_width(6)
+ mycore4:set_filled(true)
+ mycore4:set_h_margin(1)
+ mycore4:set_filled_color("#00000033")
+ vicious.register(mycore4, vicious.widgets.cpu, "$5")
+ --
+	 memwidget=blingbling.classical_graph.new()
+	 memwidget:set_height(12)
+	 memwidget:set_width(65)
+	 memwidget:set_tiles_color("#00000022")
+	 memwidget:set_show_text(false)
+	 vicious.register(memwidget, vicious.widgets.mem, '$1', 5)
+ --
+ netwidget = widget({ type = "textbox", name = "netwidget" })
+ ----bind nestat popup on textbox 
+  my_net=blingbling.net.new()
+  my_net:set_height(12)
+  my_net:set_width(88)
+  my_net:set_v_margin(3)
+  my_net:set_interface("wlan0")
+  my_net:set_show_text(true)
+  my_net:set_background_text_color("#00000022")
+  my_net:set_ippopup()
+
+
+ my_fs=blingbling.progress_bar.new()
+ my_fs:set_height(12)
+ my_fs:set_width(40)
+ my_fs:set_show_text(false)
+ my_fs:set_horizontal(true)
+ vicious.register(my_fs, vicious.widgets.fs, "${/home used_p}", 120)
+ --  
+ my_fs_root=blingbling.progress_bar.new() 
+ my_fs_root:set_height(12)
+ my_fs_root:set_width(40)
+ my_fs_root:set_show_text(false)
+ my_fs_root:set_horizontal(true)
+ fs_root = widget({ type = "textbox", text="/root: " })
+ fs_root.text="/root:"
+ fs_home = widget({ type = "textbox", text="/root: " })
+ fs_home.text="/home:"
+ vicious.register(my_fs_root, vicious.widgets.fs, "${/ used_p}", 120)
+ --
 	--}}}!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     	mywibox[s].widgets = {
         	{
@@ -325,12 +403,12 @@ for s = 1, screen.count() do
         	mylayoutbox[s],datewidget,
 		separator, kbdwidget,batwidget,baticon,
         	separator, volwidget,  volbar.widget, volicon,
-		separator, tzswidget,cpugraph.widget, cpuicon,
-		separator, membar.widget, memicon,
+		separator, tzswidget,mycore1.widget,mycore2.widget,mycore3.widget,mycore4.widget,mycairograph.widget, cpuicon,
+		separator, memwidget.widget, memicon,
 		separator, hddtempwidget,hddtempicon,
-		separator, fs.h.widget, fs.r.widget, fsicon,
+		separator, my_fs.widget,fs_home,my_fs_root.widget,fs_root,fsicon,
 		separator, mygmail,mygmailicon,
-		separator, upicon,netwidget,dnicon,
+		separator, upicon,netwidget,my_net.widget,dnicon,
 	       	separator, s == 1 and mysystray or nil,
 		separator, musicwidget.widget,
         	separator,layout = awful.widget.layout.horizontal.rightleft
@@ -496,11 +574,11 @@ awful.rules.rules = {
     { rule = { class = "MPlayer"  		}, properties = { floating = false , tag = tags[1][9]	} },
     { rule = { class = "feh" 			}, properties = { floating = true 			} },
     { rule = { class = "gimp" 	  		}, properties = { floating = false 			} },
-    { rule = { class = "Chromium-browser"   	}, properties = { tag = tags[1][2]		 	} },
+    { rule = { class = "Chromium-browser"   	}, properties = { tag = tags[1][2],floating=false 	} },
     { rule = { class = "Sonata"   		}, properties = { floating = true 			} },
     { rule = { class = "Wicd-client.py"		}, properties = { floating = true 			} },
     { rule = { class = "Vacuum"			}, properties = { tag = tags[1][1] 			} },
-    { rule = { class = "Pcmanfm" 		}, properties = { tag = tags[1][6]			} },
+    { rule = { class = "Dolphin" 		}, properties = { tag = tags[1][6]			} },
     { rule = { class = "Keepassx"		}, properties = { floating = true			} },
     { rule = { class = "Deadbeef"		}, properties = { floating = true 			} },
     { rule = { class = "Rednotebook"		}, properties = { floating = true 			} },
@@ -508,6 +586,8 @@ awful.rules.rules = {
     { rule = { class = "Znotes"			}, properties = { floating = true 			} },
     { rule = { class = "Qtcreator"		}, properties = { tag = tags[1][3] 			} },
     { rule = { class = "Plugin%-container" 	}, properties = { floating = true 			} },
+    { rule = { class = "Kate" 			}, properties = { floating = false 			} }
+
 }
 
 -- }}}
