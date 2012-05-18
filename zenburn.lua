@@ -15,7 +15,7 @@ theme.wallpaper_cmd = { "awsetbg /home/serg/.config/awesome/gerb.jpg" }
 
 -- {{{ Styles
 theme.font      = "Snap 8"
-
+theme.notify_font = "Snap 8"
 -- {{{ Colors
 theme.fg_normal = "#DCDCCC"
 theme.fg_focus  = "#F0DFAF"

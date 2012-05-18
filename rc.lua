@@ -1,94 +1,113 @@
--- Standard awesome library
 require("awful")
 require("awful.autofocus")
 require("awful.rules")
--- Theme handling library
 require("beautiful")
 require("markup")
--- Notification library
 require("naughty")
--- Виджет календаря
 require("cal")
 require("vicious")
--- виджет меню приложений
 require("blingbling")
 require('freedesktop.menu')
 require("awesompd/awesompd")
+
+-- {{{ Error handling
+-- Check if awesome encountered an error during startup and fell back to
+-- another config (This code will only ever execute for the fallback config)
+if awesome.startup_errors then
+    naughty.notify({ preset = naughty.config.presets.critical,
+                     title = "Oops, there were errors during startup!",
+                     text = awesome.startup_errors })
+end
+
+-- Handle runtime errors after startup
+do
+    local in_error = false
+    awesome.add_signal("debug::error", function (err)
+        -- Make sure we don't go into an endless error loop
+        if in_error then return end
+        in_error = true
+
+        naughty.notify({ preset = naughty.config.presets.critical,
+                         title = "Oops, an error happened!",
+                         text = err })
+        in_error = false
+    end)
+end
+-- }}}
 -- {{{ Variable definitions
 function run_once(prg, args)
-  if not prg then
-    do return nil end
-  end
-  if not args then
-    args=""
-  end
-  awful.util.spawn_with_shell('pgrep -f -u $USER -x ' .. prg .. ' || (' .. prg .. ' ' .. args ..')')
+	if not prg then
+		do return nil end
+	end
+	if not args then
+		args=""
+	end
+	awful.util.spawn_with_shell('pgrep -f -u $USER -x ' .. prg .. ' || (' .. prg .. ' ' .. args ..')')
 end
+
 -- Путь до файла с темой.
 beautiful.init("/home/serg/.config/awesome/zenburn.lua")
-local exec   = awful.util.spawn
-local sexec  = awful.util.spawn_with_shell
--- This is used later as the default terminal and editor to run.
+local exec   	= awful.util.spawn
+local sexec  	= awful.util.spawn_with_shell
 terminal	= "urxvt -tr"
 editor 	 	= "vim"
 editor_cmd 	= terminal .. " -e " .. editor
 awesome.font 	= "Snap 8"
-modkey = "Mod4"
+modkey 		= "Mod4"
 -- автозапуск приложений
 run_once("kbdd")
-run_once("mpd")
+--run_once("mpd")
 run_once("parcellite")
 run_once("nm-applet")
 run_once("kwalletmanager	")
 --run_unce("wmname","LG3D")
 layouts =
 {
-    awful.layout.suit.floating,
-    awful.layout.suit.tile,
-    awful.layout.suit.tile.left,
-    awful.layout.suit.tile.bottom,
-    awful.layout.suit.tile.top,
-    awful.layout.suit.fair,
-    awful.layout.suit.fair.horizontal,
-    awful.layout.suit.spiral,
-    awful.layout.suit.spiral.dwindle,
-    awful.layout.suit.max,
+	awful.layout.suit.floating,
+	awful.layout.suit.tile,
+	awful.layout.suit.tile.left,
+	awful.layout.suit.tile.bottom,
+	awful.layout.suit.tile.top,
+	awful.layout.suit.fair,
+	awful.layout.suit.fair.horizontal,
+	awful.layout.suit.spiral,
+	awful.layout.suit.spiral.dwindle,
+	awful.layout.suit.max,
+	awful.layout.suit.magnifier
 }
--- {{{ Tags
+-- {{{ Теги
 -- Define a tag table which hold all screen tags.
 tags = {}
 for s = 1, screen.count() do
-    -- Each screen has its own tag table.
-    tags[s] = awful.tag({ "1:im", "2:web", "3:dev", "4:doc", "5:term", "6:fm", 7, 8, "9:video" }, s, layouts[2])
+	tags[s] = awful.tag({ "1:im", "2:web", "3:dev", "4:doc", "5:term", "6:fm", 7, 8, "9:video" }, s, layouts[2])
 end
+
 awful.tag.setncol(2, tags[1][1])
 awful.tag.setnmaster (1, tags[1][1])
 awful.tag.setmwfact (0.85, tags[1][1])
 -- }}}
 
 -- {{{ Menu
--- Создание меню 
-freedesktop.utils.icon_theme = 'gnome' -- look inside /usr/share/icons/, default: nil (don't use icon theme)
-menu_items = freedesktop.menu.new()
-myawesomemenu = {
-   { "Manual", terminal .. " -e man awesome" },
-   { "Edit config", editor_cmd .. " " .. awful.util.getdir("config") .. "/rc.lua" },
-   { "Restart", awesome.restart },
-   { "Quit", awesome.quit }   
-}
+--freedesktop.utils.icon_theme = 'gnome' -- look inside /usr/share/icons/, default: nil (don't use icon theme)
+--menu_items = freedesktop.menu.new()
+--myawesomemenu = {
+	--{ "Manual", terminal .. " -e man awesome" },
+	--{ "Edit config", editor_cmd .. " " .. awful.util.getdir("config") .. "/rc.lua" },
+	--{ "Restart", awesome.restart },
+	--{ "Quit", awesome.quit }
+--}
 
-table.insert(menu_items, { "awesome", myawesomemenu, beautiful.awesome_icon })
-table.insert(menu_items, { "open terminal", terminal, freedesktop.utils.lookup_icon({icon = 'terminal'}) })
+--table.insert(menu_items, { "awesome", myawesomemenu, beautiful.awesome_icon })
+--table.insert(menu_items, { "open terminal", terminal, freedesktop.utils.lookup_icon({icon = 'terminal'}) })
 
-mymainmenu = awful.menu.new({ items = menu_items, width = 150 })
-mylauncher = awful.widget.launcher({ image = image(beautiful.awesome_icon), menu = mymainmenu })
+--mymainmenu = awful.menu.new({ items = menu_items, width = 150 })
+--mylauncher = awful.widget.launcher({ image = image(beautiful.awesome_icon), menu = mymainmenu })
 -- }}}
 
 -- {{{ Wibox
 -- Create a systray
 mysystray = widget({ type = "systray" })
 
--- Create a wibox for each screen and add it
 mywibox = {}
 mypromptbox = {}
 mylayoutbox = {}
@@ -100,15 +119,22 @@ mytaglist.buttons = awful.util.table.join(
                     awful.button({ modkey }, 3, awful.client.toggletag),
                     awful.button({ }, 4, awful.tag.viewnext),
                     awful.button({ }, 5, awful.tag.viewprev)
-                    )
+)
 mytasklist = {}
 mytasklist.buttons = awful.util.table.join(
                      awful.button({ }, 1, function (c)
-                                              if not c:isvisible() then
-                                                  awful.tag.viewonly(c:tags()[1])
+  						if c == client.focus then
+                                                	c.minimized = true
+                                              	else
+                                                	if not c:isvisible() then
+                                                      		awful.tag.viewonly(c:tags()[1])
+                                                  end
+                                                  -- This will also un-minimize
+                                                  -- the client, if needed
+                                                  client.focus = c
+                                                  c:raise()
                                               end
-                                              client.focus = c
-                                              c:raise()
+
                                           end),
                      awful.button({ }, 3, function ()
                                               if instance then
@@ -126,38 +152,21 @@ mytasklist.buttons = awful.util.table.join(
                                               awful.client.focus.byidx(-1)
                                               if client.focus then client.focus:raise() end
                                           end))
--- вынести создание виджетов из цикла
-musicwidget = awesompd:create() -- Create awesompd widget
-musicwidget.font = "Snap 8" -- Set widget font 
-musicwidget.scrolling = true -- If true, the text in the widget will be scrolled
-musicwidget.output_size = 30 -- Set the size of widget in symbols
-musicwidget.update_interval = 5 -- Set the update interval in seconds
--- Set the folder where icons are located (change username to your login name)
-musicwidget.path_to_icons = "/home/serg/.config/awesome/icons" 
--- Set the default music format for Jamendo streams. You can change
--- this option on the fly in awesompd itself.
--- possible formats: awesompd.FORMAT_MP3, awesompd.FORMAT_OGG
-musicwidget.jamendo_format = awesompd.FORMAT_MP3
--- If true, song notifications for Jamendo tracks and local tracks will also contain
--- album cover image.
-musicwidget.show_album_cover = true
--- Specify how big in pixels should an album cover be. Maximum value
--- is 100.
-musicwidget.album_cover_size = 90
--- This option is necessary if you want the album covers to be shown
--- for your local tracks.
-musicwidget.mpd_config = "/home/serg/.mpdconf"
--- Specify the browser you use so awesompd can open links from
--- Jamendo in it.
-musicwidget.browser = "chromium"
--- Specify decorators on the left and the right side of the
--- widget. Or just leave empty strings if you decorate the widget
--- from outside.
-musicwidget.ldecorator = " "
-musicwidget.rdecorator = " "
--- Set all the servers to work with (here can be any servers you use)
-musicwidget.servers = { { server = "localhost", port = 6600 } }
--- Set the buttons of the widget
+-- MPD виджет
+musicwidget 			= awesompd:create() 
+musicwidget.font 		= "Snap 8" 	
+musicwidget.scrolling 		= true 
+musicwidget.output_size 	= 30 	
+musicwidget.update_interval 	= 5 
+musicwidget.path_to_icons 	= "/home/serg/.config/awesome/icons" 
+musicwidget.jamendo_format 	= awesompd.FORMAT_MP3
+musicwidget.show_album_cover 	= true
+musicwidget.album_cover_size 	= 90
+musicwidget.mpd_config 		= "/home/serg/.mpdconf"
+musicwidget.browser 		= "chromium"
+musicwidget.ldecorator 		= " "
+musicwidget.rdecorator 		= " "
+musicwidget.servers 		= { { server = "localhost", port = 6600 } }
 musicwidget:register_buttons({ 
 				{ "", awesompd.MOUSE_LEFT, musicwidget:command_toggle() },
       			        { "Control", awesompd.MOUSE_SCROLL_UP, musicwidget:command_prev_track() },
@@ -166,37 +175,36 @@ musicwidget:register_buttons({
  			        { "", awesompd.MOUSE_SCROLL_DOWN, musicwidget:command_volume_down() },
  			        { "", awesompd.MOUSE_RIGHT, musicwidget:command_show_menu() } 
 			     })
-musicwidget:run() -- After all configuration is done, run the widget
-
-
+musicwidget:run() 
+mywibox2 = {}
 for s = 1, screen.count() do
-    	-- Create a promptbox for each screen
-    	mypromptbox[s] = awful.widget.prompt({ layout = awful.widget.layout.horizontal.leftright })
-    	-- Create an imagebox widget which will contains an icon indicating which layout we're using.
-    	-- We need one layoutbox per screen.
-    	mylayoutbox[s] = awful.widget.layoutbox(s)
-    	mylayoutbox[s]:buttons(awful.util.table.join(
+	mypromptbox[s] = awful.widget.prompt({ layout = awful.widget.layout.horizontal.leftright })
+	mylayoutbox[s] = awful.widget.layoutbox(s)
+	mylayoutbox[s]:buttons(awful.util.table.join(
         	                   awful.button({ }, 1, function () awful.layout.inc(layouts, 1) end),
                 	           awful.button({ }, 3, function () awful.layout.inc(layouts, -1) end),
                         	   awful.button({ }, 4, function () awful.layout.inc(layouts, 1) end),
-                    	           awful.button({ }, 5, function () awful.layout.inc(layouts, -1) end)))
+                    	           awful.button({ }, 5, function () awful.layout.inc(layouts, -1) end))
+	)
 	-- Create a taglist widget
-    	mytaglist[s] = awful.widget.taglist(s, awful.widget.taglist.label.all, mytaglist.buttons)
+	mytaglist[s] = awful.widget.taglist(s, awful.widget.taglist.label.all, mytaglist.buttons)
 
-    	-- Create a tasklist widget
-    	mytasklist[s] = awful.widget.tasklist(function(c)
+	-- Create a tasklist widget
+	mytasklist[s] = awful.widget.tasklist(function(c)
         	                                      return awful.widget.tasklist.label.currenttags(c, s)
-                	                          end, mytasklist.buttons)
+                	                          end, mytasklist.buttons
+	)
 	-- Создание виджета разделителя
-	separator = widget({ type = "imagebox" })
+	separator 	= widget({ type = "imagebox" })
 	separator.image = image( beautiful.widget_sep )
-    	-- Create the wibox
-    	mywibox[s] = awful.wibox({ position = "top", screen = s , height=12})
-    	-- Add widgets to the wibox - order matters
-    	baticon = widget({ type = "imagebox" })
-    	baticon.image = image(beautiful.widget_bat)
-    	batwidget = widget({ type = "textbox" })
-    	vicious.register(batwidget, vicious.widgets.bat,"$2%", 60, "BAT0")
+	-- Create the wibox
+	mywibox[s] 	= awful.wibox({ position = "top",    screen = s , height=12})
+	mywibox2[s] 	= awful.wibox({ position = "bottom", screen = s , height=12})
+	-- Add widgets to the wibox - order matters
+	baticon = widget({ type = "imagebox" })
+	baticon.image = image(beautiful.widget_bat)
+	batwidget = widget({ type = "textbox" })
+	vicious.register(batwidget, vicious.widgets.bat,"$2%", 60, "BAT0")
 	--{{{
 	-- для работы этого виджета нужно установить kbdd
 	kbdwidget = widget({type = "textbox", name = "kbdwidget"})
@@ -212,7 +220,6 @@ for s = 1, screen.count() do
 			lts = {[0] = "En", [1] = "Ru"}
 			kbdwidget.text = " "..lts[layout].." "
 		end)
-
 	-- {{{ Виджет управления громкостью
 	volicon = widget({ type = "imagebox" })
 	volicon.image = image(beautiful.widget_vol)
@@ -238,65 +245,20 @@ for s = 1, screen.count() do
 	-- {{{ Загрука профессора и температура
 	cpuicon = widget({ type = "imagebox" })
 	cpuicon.image = image(beautiful.widget_cpu)
-	--cpugraph  = awful.widget.graph()
 	tzswidget = widget({ type = "textbox" })
-	--cpugraph:set_width(40):set_height(12)
-	--cpugraph:set_background_color(beautiful.fg_off_widget)
-	--cpugraph:set_gradient_angle(0):set_gradient_colors({
-                   --beautiful.fg_end_widget, beautiful.fg_center_widget, beautiful.fg_widget
-        --}) 
-	--vicious.register(cpugraph,  vicious.widgets.cpu,      "$1")
 	vicious.register(tzswidget, vicious.widgets.thermal, " $1°C", 19, "thermal_zone0")
 	--}}}
 	-- {{{ Использование памяти
-	memicon = widget({ type = "imagebox" })
+	memicon = widget( { type = "imagebox" })
 	memicon.image = image(beautiful.widget_mem)
-	--membar = awful.widget.progressbar()
-	--membar:set_vertical(true):set_ticks(true)
-	--membar:set_height(12):set_width(6):set_ticks_size(1)
-	--membar:set_background_color(beautiful.fg_off_widget)
-	--membar:set_gradient_colors({ beautiful.fg_widget, beautiful.fg_center_widget, beautiful.fg_end_widget }) -- Register widget
-	--vicious.register(membar, vicious.widgets.mem, "$1", 12)
-	-- }}}
-	-- {{{ Использование фс
-	fsicon = widget({ type = "imagebox" })
-	fsicon.image = image(beautiful.widget_fs)
-	local coverart_nf
-
-	fs = {
-		r = awful.widget.progressbar(),
-     		h = awful.widget.progressbar(), 
-	}
-	for _, w in pairs(fs) do
-		w:set_vertical(true):set_ticks(true)
-	        w:set_height(12):set_width(6):set_ticks_size(1)
-        	w:set_border_color( beautiful.border_widget)
-	        w:set_background_color( beautiful.fg_off_widget)
-	        w:set_gradient_colors({ beautiful.fg_widget,
-        		beautiful.fg_center_widget, beautiful.fg_end_widget
-   		}) 
-    		w.widget:buttons(awful.util.table.join(
-			     awful.button({ }, 1, function () exec("dolphin", false) end)
-	     	))
-	end 
-	vicious.cache(vicious.widgets.fs)
-	vicious.register(fs.r, vicious.widgets.fs, "${/ used_p}",     599)
-	vicious.register(fs.h, vicious.widgets.fs, "${/home used_p}", 599)
-	--}}}
-	-- {{{ Виджет использования сети
-	netwidget = widget({ type = "textbox" })
-	vicious.register(netwidget, vicious.widgets.net,
-	function (widget, args)
-   		local down, up, text = args["{wlan0 down_kb}"], args["{wlan0 up_kb}"]
-   		if down ~= "0.0" or up ~= "0.0" then
-      			text = ('<span color="#CC9393">%s</span> <span color="#7F9F7F">%s</span>'):format(args["{wlan0 down_kb}"], args["{wlan0 up_kb}"])
-   		end
-		if text == nil then
-			text = '<span color="#CC9393">0.0</span> <span color="#7F9F7F">0.0</span>'
-		end
-   		return text
-	end, 5)
- blingbling.popups.netstat(netwidget,{ title_color = beautiful.notify_font_color_1, established_color= beautiful.notify_font_color_3, listen_color=beautiful.notify_font_color_2})
+	netwidget = widget( { type = "textbox" })
+ 	blingbling.popups.netstat( netwidget,
+					{ 
+						title_color = beautiful.notify_font_color_1, 
+						established_color = beautiful.notify_font_color_3, 
+						listen_color=beautiful.notify_font_color_2
+					}
+				)
 	dnicon = widget({ type = "imagebox" })
  	upicon = widget({ type = "imagebox" })
  	dnicon.image = image(beautiful.widget_net)
@@ -317,102 +279,112 @@ for s = 1, screen.count() do
 	vicious.register(mygmail, vicious.widgets.gmail,"${count}",120)
 	--}}}!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  --
-	 mycairograph=blingbling.classical_graph.new()
-	 mycairograph:set_height(12)
-	 mycairograph:set_width(65)
-	 mycairograph:set_tiles_color("#00000022")
-	 mycairograph:set_show_text(false)
- 	 vicious.register(mycairograph, vicious.widgets.cpu,'$1',2)
+	mycairograph=blingbling.classical_graph.new()
+	mycairograph:set_height(12)
+	mycairograph:set_width(85)
+	mycairograph:set_tiles_color("#00000022")
+	mycairograph:set_show_text(false)
+	vicious.register(mycairograph, vicious.widgets.cpu,'$1',2)
  --
- mycore1=blingbling.progress_graph.new()
- mycore1:set_height(12)
- mycore1:set_width(6)
- mycore1:set_filled(true)
- mycore1:set_h_margin(1)
- mycore1:set_filled_color("#00000033")
- vicious.register(mycore1, vicious.widgets.cpu, "$2")
- mycore2=blingbling.progress_graph.new()
- mycore2:set_height(12)
- mycore2:set_width(6)
- mycore2:set_filled(true)
- mycore2:set_h_margin(1)
- mycore2:set_filled_color("#00000033")
- vicious.register(mycore2, vicious.widgets.cpu, "$3")
+	mycore1=blingbling.progress_graph.new()
+	mycore1:set_height(12)
+	mycore1:set_width(6)
+	mycore1:set_filled(true)
+	mycore1:set_h_margin(1)
+	mycore1:set_filled_color("#00000033")
+	vicious.register(mycore1, vicious.widgets.cpu, "$2")
+	mycore2=blingbling.progress_graph.new()
+	mycore2:set_height(12)
+	mycore2:set_width(6)
+	mycore2:set_filled(true)
+	mycore2:set_h_margin(1)
+	mycore2:set_filled_color("#00000033")
+	vicious.register(mycore2, vicious.widgets.cpu, "$3")
 
- mycore3=blingbling.progress_graph.new()
- mycore3:set_height(12)
- mycore3:set_width(6)
- mycore3:set_filled(true)
- mycore3:set_h_margin(1)
- mycore3:set_filled_color("#00000033")
- vicious.register(mycore3, vicious.widgets.cpu, "$4")
-
- mycore4=blingbling.progress_graph.new()
- mycore4:set_height(12)
- mycore4:set_width(6)
- mycore4:set_filled(true)
- mycore4:set_h_margin(1)
- mycore4:set_filled_color("#00000033")
- vicious.register(mycore4, vicious.widgets.cpu, "$5")
+	mycore3=blingbling.progress_graph.new()
+	mycore3:set_height(12)
+	mycore3:set_width(6)
+	mycore3:set_filled(true)
+	mycore3:set_h_margin(1)
+	mycore3:set_filled_color("#00000033")
+	vicious.register(mycore3, vicious.widgets.cpu, "$4")
+	
+	mycore4=blingbling.progress_graph.new()
+	mycore4:set_height(12)
+	mycore4:set_width(6)
+	mycore4:set_filled(true)
+	mycore4:set_h_margin(1)
+	mycore4:set_filled_color("#00000033")
+	vicious.register(mycore4, vicious.widgets.cpu, "$5")
  --
-	 memwidget=blingbling.classical_graph.new()
-	 memwidget:set_height(12)
-	 memwidget:set_width(65)
-	 memwidget:set_tiles_color("#00000022")
-	 memwidget:set_show_text(false)
-	 vicious.register(memwidget, vicious.widgets.mem, '$1', 5)
+	memwidget=blingbling.classical_graph.new()
+	memwidget:set_height(12)
+	memwidget:set_width(85)
+	memwidget:set_tiles_color("#00000022")
+	memwidget:set_show_text(false)
+	vicious.register(memwidget, vicious.widgets.mem, '$1', 5)
  --
- netwidget = widget({ type = "textbox", name = "netwidget" })
- ----bind nestat popup on textbox 
-  my_net=blingbling.net.new()
-  my_net:set_height(12)
-  my_net:set_width(88)
-  my_net:set_v_margin(3)
-  my_net:set_interface("wlan0")
-  my_net:set_show_text(true)
-  my_net:set_background_text_color("#00000022")
-  my_net:set_ippopup()
+	netwidget = widget({ type = "textbox", name = "netwidget" })
+	my_net=blingbling.net.new()
+	my_net:set_height(12)
+	my_net:set_width(70)
+	my_net:set_v_margin(3)
+	my_net:set_interface("wlan0")
+	my_net:set_show_text(true)
+	my_net:set_background_text_color("#00000022")
+	my_net:set_ippopup()
 
-
- my_fs=blingbling.progress_bar.new()
- my_fs:set_height(12)
- my_fs:set_width(40)
- my_fs:set_show_text(false)
- my_fs:set_horizontal(true)
- vicious.register(my_fs, vicious.widgets.fs, "${/home used_p}", 120)
- --  
- my_fs_root=blingbling.progress_bar.new() 
- my_fs_root:set_height(12)
- my_fs_root:set_width(40)
- my_fs_root:set_show_text(false)
- my_fs_root:set_horizontal(true)
- fs_root = widget({ type = "textbox", text="/root: " })
- fs_root.text="/root:"
- fs_home = widget({ type = "textbox", text="/root: " })
- fs_home.text="/home:"
- vicious.register(my_fs_root, vicious.widgets.fs, "${/ used_p}", 120)
+	my_fs=blingbling.progress_graph.new()
+	my_fs:set_height(12)
+	my_fs:set_width(55)
+	my_fs:set_show_text(false)
+	my_fs:set_horizontal(true)
+	my_fs:set_filled(true)
+	vicious.register(my_fs, vicious.widgets.fs, "${/home used_p}", 120)
+ --
+	my_fs_root=blingbling.progress_graph.new()
+	my_fs_root:set_height(12)
+	my_fs_root:set_width(55)
+	my_fs_root:set_show_text(false)
+	my_fs_root:set_horizontal(true)
+	my_fs_root:set_filled(true)
+	fs_root = widget({ type = "textbox" })
+	fs_root.text="/root: "
+	fs_home = widget({ type = "textbox" })
+	fs_home.text="/home: "
+	vicious.register(my_fs_root, vicious.widgets.fs, "${/ used_p}", 120)
  --
 	--}}}!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    	mywibox[s].widgets = {
+	mywibox[s].widgets = {
         	{
-                        --mylauncher,
         		mytaglist[s],
         		mypromptbox[s],   	    
         		layout = awful.widget.layout.horizontal.leftright
         	},
         	mylayoutbox[s],datewidget,
+	       	separator, s == 1 and mysystray or nil,
 		separator, kbdwidget,batwidget,baticon,
         	separator, volwidget,  volbar.widget, volicon,
-		separator, tzswidget,mycore1.widget,mycore2.widget,mycore3.widget,mycore4.widget,mycairograph.widget, cpuicon,
-		separator, memwidget.widget, memicon,
-		separator, hddtempwidget,hddtempicon,
-		separator, my_fs.widget,fs_home,my_fs_root.widget,fs_root,fsicon,
+		--separator, tzswidget,mycore1.widget,mycore2.widget,mycore3.widget,mycore4.widget,mycairograph.widget, cpuicon,
+		--separator, memwidget.widget, memicon,
+		--separator, hddtempwidget,hddtempicon,
+		--separator, my_fs.widget,fs_home,my_fs_root.widget,fs_root,fsicon,
 		separator, mygmail,mygmailicon,
-		separator, upicon,netwidget,my_net.widget,dnicon,
-	       	separator, s == 1 and mysystray or nil,
-		separator, musicwidget.widget,
-        	separator,layout = awful.widget.layout.horizontal.rightleft
-    	}
+		--separator, dnicon,netwidget,my_net.widget,upicon,
+		--separator, musicwidget.widget,
+        	separator, layout = awful.widget.layout.horizontal.rightleft
+	}
+
+	mywibox2[s].widgets = {
+		separator, my_fs.widget,fs_home,my_fs_root.widget,fs_root,fsicon,
+		separator, tzswidget,mycore1.widget,mycore2.widget,mycore3.widget,mycore4.widget,
+		separator, mycairograph.widget, cpuicon,
+		separator, hddtempwidget,hddtempicon,
+		separator, memwidget.widget, memicon,
+    	        separator, dnicon,netwidget,my_net.widget,upicon,
+ 		separator, musicwidget.widget,
+		layout = awful.widget.layout.horizontal.rightleft
+	}
 end
 -- }}}!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 -- {{{ Mouse bindings
@@ -502,7 +474,7 @@ clientkeys = awful.util.table.join(
     awful.key({ modkey,           }, "o",      awful.client.movetoscreen                        ),
     awful.key({ modkey, "Shift"   }, "r",      function (c) c:redraw()                       end),
     awful.key({ modkey,           }, "t",      function (c) c.ontop = not c.ontop            end),
-    awful.key({ modkey,           }, "n",      function (c) c.minimized = not c.minimized    end),
+    awful.key({ modkey,           }, "n",      function (c) c.minimized = true    	     end),
     awful.key({ modkey,           }, "m",
         function (c)
             c.maximized_horizontal = not c.maximized_horizontal
@@ -569,7 +541,8 @@ awful.rules.rules = {
                 keys = clientkeys,
 		maximized_vertical   = false,
 		maximized_horizontal = false,
-                buttons = clientbuttons }},
+                buttons = clientbuttons }
+	},
 		     
     { rule = { class = "MPlayer"  		}, properties = { floating = false , tag = tags[1][9]	} },
     { rule = { class = "feh" 			}, properties = { floating = true 			} },
@@ -586,7 +559,8 @@ awful.rules.rules = {
     { rule = { class = "Znotes"			}, properties = { floating = true 			} },
     { rule = { class = "Qtcreator"		}, properties = { tag = tags[1][3] 			} },
     { rule = { class = "Plugin%-container" 	}, properties = { floating = true 			} },
-    { rule = { class = "Kate" 			}, properties = { floating = false 			} }
+    { rule = { class = "Kate" 			}, properties = { floating = false 			} },
+    { rule = { class = "VCLSalFrame"		}, properties = { floating = false, tag = tags[1][4]	} }
 
 }
 

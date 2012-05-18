@@ -384,7 +384,7 @@ for s = 1, screen.count() do
   my_volume:set_background_graph_color("#00000099")
   my_volume:set_graph_color("#00ccffaa")
 -- wiboxs
-    my_top_wibox[s] = awful.wibox({ position = "top", screen = s, height=16 })
+  my_top_wibox[s] = awful.wibox({ position = "top", screen = s, height=16 })
     
     -- Add widgets to the wibox - order matters
     my_top_wibox[s].widgets = {
