@@ -5,7 +5,7 @@ require("beautiful")
 require("markup")
 require("naughty")
 require("cal")
-require("vicious")
+local vicious = require("vicious")
 require("blingbling")
 require('freedesktop.menu')
 require("awesompd/awesompd")
@@ -16,7 +16,8 @@ require("awesompd/awesompd")
 if awesome.startup_errors then
     naughty.notify({ preset = naughty.config.presets.critical,
                      title = "Oops, there were errors during startup!",
-                     text = awesome.startup_errors })
+                     text = awesome.startup_errors 
+	     })
 end
 
 -- Handle runtime errors after startup
@@ -29,7 +30,8 @@ do
 
         naughty.notify({ preset = naughty.config.presets.critical,
                          title = "Oops, an error happened!",
-                         text = err })
+                         text = err 
+		 })
         in_error = false
     end)
 end
@@ -59,7 +61,7 @@ run_once("kbdd")
 --run_once("mpd")
 run_once("parcellite")
 run_once("nm-applet")
-run_once("kwalletmanager	")
+--run_once("kwalletmanager	")
 --run_unce("wmname","LG3D")
 layouts =
 {
@@ -80,6 +82,7 @@ layouts =
 tags = {}
 for s = 1, screen.count() do
 	tags[s] = awful.tag({ "1:im", "2:web", "3:dev", "4:doc", "5:term", "6:fm", 7, 8, "9:video" }, s, layouts[2])
+	--tags[s] = awful.tag({ "➊", "➋", "➌", "➍", "➎", "➏", "➐", "➑", "➒"  }, s, layouts[2])
 end
 
 awful.tag.setncol(2, tags[1][1])
@@ -87,20 +90,21 @@ awful.tag.setnmaster (1, tags[1][1])
 awful.tag.setmwfact (0.85, tags[1][1])
 -- }}}
 
--- {{{ Menu
---freedesktop.utils.icon_theme = 'gnome' -- look inside /usr/share/icons/, default: nil (don't use icon theme)
---menu_items = freedesktop.menu.new()
---myawesomemenu = {
-	--{ "Manual", terminal .. " -e man awesome" },
-	--{ "Edit config", editor_cmd .. " " .. awful.util.getdir("config") .. "/rc.lua" },
-	--{ "Restart", awesome.restart },
-	--{ "Quit", awesome.quit }
---}
+--{{{ Menu
+freedesktop.utils.terminal = terminal
+freedesktop.utils.icon_theme = 'oxygen' -- look inside /usr/share/icons/, default: nil (don't use icon theme)
+menu_items = freedesktop.menu.new()
+myawesomemenu = {
+	{ "Manual", terminal .. " -e man awesome" },
+	{ "Edit config", editor_cmd .. " " .. awful.util.getdir("config") .. "/rc.lua" },
+	{ "Restart", awesome.restart },
+	{ "Quit", awesome.quit }
+}
 
---table.insert(menu_items, { "awesome", myawesomemenu, beautiful.awesome_icon })
---table.insert(menu_items, { "open terminal", terminal, freedesktop.utils.lookup_icon({icon = 'terminal'}) })
+table.insert(menu_items, { "awesome", myawesomemenu, beautiful.awesome_icon })
+table.insert(menu_items, { "open terminal", terminal, freedesktop.utils.lookup_icon({icon = 'terminal'}) })
 
---mymainmenu = awful.menu.new({ items = menu_items, width = 150 })
+mymainmenu = awful.menu.new({ items = menu_items, width = 150 })
 --mylauncher = awful.widget.launcher({ image = image(beautiful.awesome_icon), menu = mymainmenu })
 -- }}}
 
@@ -175,7 +179,13 @@ musicwidget:register_buttons({
  			        { "", awesompd.MOUSE_SCROLL_DOWN, musicwidget:command_volume_down() },
  			        { "", awesompd.MOUSE_RIGHT, musicwidget:command_show_menu() } 
 			     })
-musicwidget:run() 
+musicwidget:run()
+
+
+--{{{
+
+
+--}}}
 mywibox2 = {}
 for s = 1, screen.count() do
 	mypromptbox[s] = awful.widget.prompt({ layout = awful.widget.layout.horizontal.leftright })
@@ -201,16 +211,16 @@ for s = 1, screen.count() do
 	mywibox[s] 	= awful.wibox({ position = "top",    screen = s , height=12})
 	mywibox2[s] 	= awful.wibox({ position = "bottom", screen = s , height=12})
 	-- Add widgets to the wibox - order matters
-	baticon = widget({ type = "imagebox" })
-	baticon.image = image(beautiful.widget_bat)
-	batwidget = widget({ type = "textbox" })
+	baticon 	= widget({ type = "imagebox" })
+	baticon.image 	= image(beautiful.widget_bat)
+	batwidget 	= widget({ type = "textbox" })
 	vicious.register(batwidget, vicious.widgets.bat,"$2%", 60, "BAT0")
 	--{{{
 	-- для работы этого виджета нужно установить kbdd
-	kbdwidget = widget({type = "textbox", name = "kbdwidget"})
-	kbdwidget.border_width = 0
-	kbdwidget.border_color = beautiful.fg_normal
-	kbdwidget.text = " En "
+	kbdwidget 		= widget({type = "textbox", name = "kbdwidget"})
+	kbdwidget.border_width 	= 0
+	kbdwidget.border_color 	= beautiful.fg_normal
+	kbdwidget.text 		= " En "
 	dbus.request_name("session", "ru.gentoo.kbdd")
 	dbus.add_match("session", "interface='ru.gentoo.kbdd',member='layoutChanged'")
 	dbus.add_signal("ru.gentoo.kbdd", 
@@ -221,10 +231,10 @@ for s = 1, screen.count() do
 			kbdwidget.text = " "..lts[layout].." "
 		end)
 	-- {{{ Виджет управления громкостью
-	volicon = widget({ type = "imagebox" })
-	volicon.image = image(beautiful.widget_vol)
-	volbar    = awful.widget.progressbar()
-	volwidget = widget({ type = "textbox" })
+	volicon 	= widget({ type = "imagebox" })
+	volicon.image 	= image(beautiful.widget_vol)
+	volbar    	= awful.widget.progressbar()
+	volwidget 	= widget({ type = "textbox" })
 	-- Progressbar properties
 	volbar:set_vertical(true):set_ticks(true)
 	volbar:set_height(12):set_width(6):set_ticks_size(1)
@@ -243,15 +253,15 @@ for s = 1, screen.count() do
 	vicious.register(datewidget, vicious.widgets.date, " %R ", 61)
 
 	-- {{{ Загрука профессора и температура
-	cpuicon = widget({ type = "imagebox" })
-	cpuicon.image = image(beautiful.widget_cpu)
-	tzswidget = widget({ type = "textbox" })
+	cpuicon 	= widget({ type = "imagebox" })
+	cpuicon.image 	= image(beautiful.widget_cpu)
+	tzswidget 	= widget({ type = "textbox" })
 	vicious.register(tzswidget, vicious.widgets.thermal, " $1°C", 19, "thermal_zone0")
 	--}}}
 	-- {{{ Использование памяти
-	memicon = widget( { type = "imagebox" })
-	memicon.image = image(beautiful.widget_mem)
-	netwidget = widget( { type = "textbox" })
+	memicon 	= widget( { type = "imagebox" })
+	memicon.image 	= image(beautiful.widget_mem)
+	netwidget 	= widget( { type = "textbox" })
  	blingbling.popups.netstat( netwidget,
 					{ 
 						title_color = beautiful.notify_font_color_1, 
@@ -259,16 +269,16 @@ for s = 1, screen.count() do
 						listen_color=beautiful.notify_font_color_2
 					}
 				)
-	dnicon = widget({ type = "imagebox" })
- 	upicon = widget({ type = "imagebox" })
- 	dnicon.image = image(beautiful.widget_net)
- 	upicon.image = image(beautiful.widget_netup)
+	dnicon 		= widget({ type = "imagebox" })
+ 	upicon 		= widget({ type = "imagebox" })
+ 	dnicon.image 	= image(beautiful.widget_net)
+ 	upicon.image 	= image(beautiful.widget_netup)
 	--}}}
 	
 	-- {{{ Температура HDD
-	hddtempicon = widget({ type = "imagebox" })
-	hddtempicon.image = image(beautiful.widget_temp)
- 	hddtempwidget = widget({ type = "textbox" })
+	hddtempicon 		= widget({ type = "imagebox" })
+	hddtempicon.image 	= image(beautiful.widget_temp)
+ 	hddtempwidget 		= widget({ type = "textbox" })
   	vicious.register(hddtempwidget, vicious.widgets.hddtemp, "${/dev/sda}°C", 19)
 	--}}}
 	
@@ -277,7 +287,7 @@ for s = 1, screen.count() do
 	mygmailicon.image = image (beautiful.widget_mail)
 	mygmail = widget({ type = "textbox" })
 	vicious.register(mygmail, vicious.widgets.gmail,"${count}",120)
-	--}}}!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	--}}} 
  --
 	mycairograph=blingbling.classical_graph.new()
 	mycairograph:set_height(12)
@@ -286,14 +296,15 @@ for s = 1, screen.count() do
 	mycairograph:set_show_text(false)
 	vicious.register(mycairograph, vicious.widgets.cpu,'$1',2)
  --
-	mycore1=blingbling.progress_graph.new()
+	mycore1 	= blingbling.progress_graph.new()
 	mycore1:set_height(12)
 	mycore1:set_width(6)
 	mycore1:set_filled(true)
 	mycore1:set_h_margin(1)
 	mycore1:set_filled_color("#00000033")
 	vicious.register(mycore1, vicious.widgets.cpu, "$2")
-	mycore2=blingbling.progress_graph.new()
+
+	mycore2 	= blingbling.progress_graph.new()
 	mycore2:set_height(12)
 	mycore2:set_width(6)
 	mycore2:set_filled(true)
@@ -301,7 +312,7 @@ for s = 1, screen.count() do
 	mycore2:set_filled_color("#00000033")
 	vicious.register(mycore2, vicious.widgets.cpu, "$3")
 
-	mycore3=blingbling.progress_graph.new()
+	mycore3 	= blingbling.progress_graph.new()
 	mycore3:set_height(12)
 	mycore3:set_width(6)
 	mycore3:set_filled(true)
@@ -309,7 +320,7 @@ for s = 1, screen.count() do
 	mycore3:set_filled_color("#00000033")
 	vicious.register(mycore3, vicious.widgets.cpu, "$4")
 	
-	mycore4=blingbling.progress_graph.new()
+	mycore4 	= blingbling.progress_graph.new()
 	mycore4:set_height(12)
 	mycore4:set_width(6)
 	mycore4:set_filled(true)
@@ -317,14 +328,14 @@ for s = 1, screen.count() do
 	mycore4:set_filled_color("#00000033")
 	vicious.register(mycore4, vicious.widgets.cpu, "$5")
  --
-	memwidget=blingbling.classical_graph.new()
+	memwidget 	= blingbling.classical_graph.new()
 	memwidget:set_height(12)
 	memwidget:set_width(85)
 	memwidget:set_tiles_color("#00000022")
 	memwidget:set_show_text(false)
 	vicious.register(memwidget, vicious.widgets.mem, '$1', 5)
  --
-	netwidget = widget({ type = "textbox", name = "netwidget" })
+	netwidget 	= widget({ type = "textbox", name = "netwidget" })
 	my_net=blingbling.net.new()
 	my_net:set_height(12)
 	my_net:set_width(70)
@@ -365,13 +376,7 @@ for s = 1, screen.count() do
 	       	separator, s == 1 and mysystray or nil,
 		separator, kbdwidget,batwidget,baticon,
         	separator, volwidget,  volbar.widget, volicon,
-		--separator, tzswidget,mycore1.widget,mycore2.widget,mycore3.widget,mycore4.widget,mycairograph.widget, cpuicon,
-		--separator, memwidget.widget, memicon,
-		--separator, hddtempwidget,hddtempicon,
-		--separator, my_fs.widget,fs_home,my_fs_root.widget,fs_root,fsicon,
 		separator, mygmail,mygmailicon,
-		--separator, dnicon,netwidget,my_net.widget,upicon,
-		--separator, musicwidget.widget,
         	separator, layout = awful.widget.layout.horizontal.rightleft
 	}
 
