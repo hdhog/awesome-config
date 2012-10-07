@@ -1,13 +1,9 @@
 require("awful")
 require("awful.autofocus")
 require("awful.rules")
-require("beautiful")
-require("markup")
-require("naughty")
-require("cal")
-local vicious = require("vicious")
-require("blingbling")
-require("awesompd/awesompd")
+
+-- Установка локализации
+os.setlocale(os.getenv("LANG"))
 
 -- {{{ Обработка ошибок
 if awesome.startup_errors then
@@ -25,13 +21,15 @@ do
 			return
 		end
 		in_error = true
-	
-		naughty.notify({ preset = naughty.config.presets.critical,
+
+		naughty.notify({
+			preset = naughty.config.presets.critical,
 			title = "Oops, произошла ошибка!", text = err
 		})
 		in_error = false
 	end)
 end
+
 -- }}}
 -- Функция для запуска внешних приложений
 function run_once(prg, args)
@@ -43,10 +41,11 @@ function run_once(prg, args)
 	end
 	awful.util.spawn_with_shell('pgrep -f -u $USER -x ' .. prg .. ' || (' .. prg .. ' ' .. args ..')')
 end
-        
+
 -- {{{ Variable definitions
 -- Путь до файла с темой.
 beautiful.init("/home/serg/.config/awesome/zenburn.lua")
+confdir="/home/serg/.config"
 local exec   	= awful.util.spawn
 local sexec  	= awful.util.spawn_with_shell
 terminal	= "urxvt -tr"
@@ -56,8 +55,7 @@ awesome.font 	= "Snap 8"
 modkey 		= "Mod4"
 
 
-layouts =
-{
+layouts = {
 	awful.layout.suit.floating,
 	awful.layout.suit.tile,
 	awful.layout.suit.tile.left,
@@ -74,11 +72,11 @@ layouts =
 tags = {}
 for s = 1, screen.count() do
 	tags[s] = awful.tag({ "1:im", "2:web", "3:dev", "4:doc", "5:term", "6:fm", 7, 8, "9:video" }, s, layouts[2])
-	-- 
-	awful.tag.setncol(2, tags[1][1])
-	awful.tag.setnmaster (1, tags[1][1])
-	awful.tag.setmwfact (0.85, tags[1][1])
 end
+
+awful.tag.setncol(2, tags[1][1])
+awful.tag.setnmaster (1, tags[1][1])
+awful.tag.setmwfact (0.85, tags[1][1])
 -- }}}
 
 --{{{ Меню приложений
@@ -95,203 +93,27 @@ bottom_panel = {}
 mypromptbox = {}
 mylayoutbox = {}
 mytaglist = {}
+
 mytaglist.buttons = awful.util.table.join(
-                    awful.button({ }, 1, awful.tag.viewonly),
-                    awful.button({ modkey }, 1, awful.client.movetotag),
-                    awful.button({ }, 3, awful.tag.viewtoggle),
-                    awful.button({ modkey }, 3, awful.client.toggletag),
-                    awful.button({ }, 4, awful.tag.viewnext),
-                    awful.button({ }, 5, awful.tag.viewprev)
-)
+			awful.button({ }, 1, awful.tag.viewonly),
+			awful.button({ modkey }, 1, awful.client.movetotag),
+			awful.button({ }, 3, awful.tag.viewtoggle),
+			awful.button({ modkey }, 3, awful.client.toggletag),
+			awful.button({ }, 4, awful.tag.viewnext),
+			awful.button({ }, 5, awful.tag.viewprev) )
 mytasklist = {}
 
---{{{ MPD виджет
-musicwidget 			= awesompd:create() 
-musicwidget.font 		= "Snap 8" 	
-musicwidget.scrolling 		= true 
-musicwidget.output_size 	= 30 	
-musicwidget.update_interval 	= 5 
-musicwidget.path_to_icons 	= "/home/serg/.config/awesome/icons" 
-musicwidget.jamendo_format 	= awesompd.FORMAT_MP3
-musicwidget.show_album_cover 	= true
-musicwidget.album_cover_size 	= 90
-musicwidget.mpd_config 		= "/home/serg/.mpdconf"
-musicwidget.browser 		= "chromium"
-musicwidget.ldecorator 		= " "
-musicwidget.rdecorator 		= " "
-musicwidget.servers 		= { { server = "localhost", port = 6600 } }
-musicwidget:register_buttons({ 
-				{ "", awesompd.MOUSE_LEFT, musicwidget:command_toggle() },
-      			        { "Control", awesompd.MOUSE_SCROLL_UP, musicwidget:command_prev_track() },
- 			        { "Control", awesompd.MOUSE_SCROLL_DOWN, musicwidget:command_next_track() },
- 			        { "", awesompd.MOUSE_SCROLL_UP, musicwidget:command_volume_up() },
- 			        { "", awesompd.MOUSE_SCROLL_DOWN, musicwidget:command_volume_down() },
- 			        { "", awesompd.MOUSE_RIGHT, musicwidget:command_show_menu() } 
-			     })
-musicwidget:run()
--- }}}
--- {{{ Создание виджета разделителя
-separator 	= widget({ type = "imagebox" })
-separator.image = image( beautiful.widget_sep )
--- }}} 
--- {{{ Виджет батареи
-baticon 	= widget({ type = "imagebox" })
-baticon.image 	= image(beautiful.widget_bat)
-batwidget 	= widget({ type = "textbox" })
-vicious.register(batwidget, vicious.widgets.bat,"$2%", 60, "BAT0")
--- }}}
-
--- {{{ Видежет отображения раскладки для работы требудется kbdd
-kbdwidget 		= widget({type = "textbox", name = "kbdwidget"})
-kbdwidget.border_width 	= 0
-kbdwidget.border_color 	= beautiful.fg_normal
-kbdwidget.text 		= " En "
-dbus.request_name("session", "ru.gentoo.kbdd")
-dbus.add_match("session", "interface='ru.gentoo.kbdd',member='layoutChanged'")
-dbus.add_signal("ru.gentoo.kbdd",
-	function(...)
-		local data = {...}
-		local layout = data[2]
-		lts = {[0] = "En", [1] = "Ru"}
-		kbdwidget.text = " "..lts[layout].." "
-	end)
--- }}}
--- {{{ Виджет управления громкостью
-volicon 	= widget({ type = "imagebox" })
-volicon.image 	= image(beautiful.widget_vol)
-volbar    	= awful.widget.progressbar()
-volwidget 	= widget({ type = "textbox" })
--- Параметры прогресс бара
-volbar:set_vertical(true):set_ticks(true)
-volbar:set_height(12):set_width(6):set_ticks_size(1)
-volbar:set_background_color(beautiful.fg_off_widget)
-volbar:set_gradient_colors({ beautiful.fg_widget, beautiful.fg_center_widget, beautiful.fg_end_widget })
--- Enable caching
-vicious.cache(vicious.widgets.volume)
--- Регистрация виджета
-vicious.register(volbar,    vicious.widgets.volume,  "$1",  2, "Master")
-vicious.register(volwidget, vicious.widgets.volume, " $1%", 2, "Master")
--- }}}
-
--- {{{ Виджет отображающий время и календарь
-datewidget = widget({ type = "textbox" })
-cal.register(datewidget, markup.bg(beautiful.fg_normal,'<span color="#ff0000"><b>%s</b></span>'))
-vicious.register(datewidget, vicious.widgets.date, " %R ", 61)
--- }}}
-
--- {{{ Загрука и температура процессора
-cpuicon 	= widget({ type = "imagebox" })
-cpuicon.image 	= image(beautiful.widget_cpu)
-tzswidget 	= widget({ type = "textbox" })
-vicious.register(tzswidget, vicious.widgets.thermal, " $1°C", 19, "thermal_zone0")
-
-cpu_graph = blingbling.classical_graph.new()
-cpu_graph:set_height(12)
-cpu_graph:set_width(85)
-cpu_graph:set_tiles_color("#00000022")
-cpu_graph:set_show_text(false)
-vicious.register(cpu_graph, vicious.widgets.cpu,'$1',2)
---
-cpu_core_1 = blingbling.progress_graph.new()
-cpu_core_1:set_height(12)
-cpu_core_1:set_width(6)
-cpu_core_1:set_filled(true)
-cpu_core_1:set_h_margin(1)
-cpu_core_1:set_filled_color("#00000033")
-vicious.register(cpu_core_1, vicious.widgets.cpu, "$2")
-
-cpu_core_2 	= blingbling.progress_graph.new()
-cpu_core_2:set_height(12)
-cpu_core_2:set_width(6)
-cpu_core_2:set_filled(true)
-cpu_core_2:set_h_margin(1)
-cpu_core_2:set_filled_color("#00000033")
-vicious.register(cpu_core_2, vicious.widgets.cpu, "$3")
-
-cpu_core_3 	= blingbling.progress_graph.new()
-cpu_core_3:set_height(12)
-cpu_core_3:set_width(6)
-cpu_core_3:set_filled(true)
-cpu_core_3:set_h_margin(1)
-cpu_core_3:set_filled_color("#00000033")
-vicious.register(cpu_core_3, vicious.widgets.cpu, "$4")
-
-cpu_core_4 	= blingbling.progress_graph.new()
-cpu_core_4:set_height(12)
-cpu_core_4:set_width(6)
-cpu_core_4:set_filled(true)
-cpu_core_4:set_h_margin(1)
-cpu_core_4:set_filled_color("#00000033")
-vicious.register(cpu_core_4, vicious.widgets.cpu, "$5")
---}}}
--- {{{ Использование памяти
-memicon 	= widget( { type = "imagebox" })
-memicon.image 	= image(beautiful.widget_mem)
-memwidget 	= blingbling.classical_graph.new()
-memwidget:set_height(12)
-memwidget:set_width(85)
-memwidget:set_tiles_color("#00000022")
-memwidget:set_show_text(false)
-vicious.register(memwidget, vicious.widgets.mem, '$1', 5)
--- }}}
--- {{{ Загрука сети
-dnicon 		= widget({ type = "imagebox" })
-upicon 		= widget({ type = "imagebox" })
-dnicon.image 	= image(beautiful.widget_net)
-upicon.image 	= image(beautiful.widget_netup)
-
-network = widget({ type = "textbox" })
- -- Register widget
-vicious.register(network, vicious.widgets.net, '<span color="#CC9393">${wlan0 down_kb}</span> : <span color="#7F9F7F">${wlan0 up_kb}</span>', 3)
-
--- {{{ Температура HDD
-hddtempicon 		= widget({ type = "imagebox" })
-hddtempicon.image 	= image(beautiful.widget_temp)
-hddtempwidget 		= widget({ type = "textbox" })
-vicious.register(hddtempwidget, vicious.widgets.hddtemp, "${/dev/sda}°C", 19)
---}}}
-
---{{{ Gmail уведомления о почте
-gmailicon = widget({type = "imagebox"})
-gmailicon.image = image (beautiful.widget_mail)
-gmail = widget({ type = "textbox" })
-vicious.register(gmail, vicious.widgets.gmail,"${count}",120)
---}}}
-
--- {{{ Состояние файловой системы
-fs_home = blingbling.progress_graph.new()
-fs_home:set_height(12)
-fs_home:set_width(55)
-fs_home:set_show_text(false)
-fs_home:set_horizontal(true)
-fs_home:set_filled(true)
-vicious.register(fs_home, vicious.widgets.fs, "${/home used_p}", 120)
---
-fs_root = blingbling.progress_graph.new()
-fs_root:set_height(12)
-fs_root:set_width(55)
-fs_root:set_show_text(false)
-fs_root:set_horizontal(true)
-fs_root:set_filled(true)
-vicious.register(fs_root, vicious.widgets.fs, "${/ used_p}", 120)
-
-fs_root_label = widget({ type = "textbox" })
-fs_root_label.text = "/root: "
-
-fs_home_label = widget({ type = "textbox" })
-fs_home_label.text = "/home: "
--- }}}
+require("widgets")
 -- {{{
 for s = 1, screen.count() do
 	-- запуск внешних команд
 	mypromptbox[s] = awful.widget.prompt({ layout = awful.widget.layout.horizontal.leftright })
 	mylayoutbox[s] = awful.widget.layoutbox(s)
 	mylayoutbox[s]:buttons(awful.util.table.join(
-        	                   awful.button({ }, 1, function () awful.layout.inc(layouts, 1) end),
-                	           awful.button({ }, 3, function () awful.layout.inc(layouts, -1) end),
-                        	   awful.button({ }, 4, function () awful.layout.inc(layouts, 1) end),
-                    	           awful.button({ }, 5, function () awful.layout.inc(layouts, -1) end))
-	)
+				awful.button({ }, 1, function () awful.layout.inc(layouts, 1) end),
+				awful.button({ }, 3, function () awful.layout.inc(layouts, -1) end),
+				awful.button({ }, 4, function () awful.layout.inc(layouts, 1) end),
+				awful.button({ }, 5, function () awful.layout.inc(layouts, -1) end)))
 	-- Список тегов
 	mytaglist[s] = awful.widget.taglist(s, awful.widget.taglist.label.all, mytaglist.buttons)
 
@@ -300,27 +122,29 @@ for s = 1, screen.count() do
 	bottom_panel[s] = awful.wibox({ position = "bottom", screen = s , height=12})
 
 	top_panel[s].widgets = {
-        	{
-        		mytaglist[s],
-        		mypromptbox[s],
-        		layout = awful.widget.layout.horizontal.leftright
-        	},
-        	mylayoutbox[s], datewidget,
-	       	separator, s == 1 and mysystray or nil,
+		{
+			mytaglist[s],
+			mypromptbox[s],
+			layout = awful.widget.layout.horizontal.leftright
+		},
+		mylayoutbox[s], datewidget,
+		separator, s == 1 and mysystray or nil,
 		separator, kbdwidget, batwidget, baticon,
-        	separator, volwidget, volbar.widget, volicon,
+		separator, volwidget, volbar.widget, volicon,
 		separator, gmail, gmailicon,
-        	separator, layout = awful.widget.layout.horizontal.rightleft
+		separator, wifi_widget,wifi_icon,
+		--separator, weather_widget,
+		separator, layout = awful.widget.layout.horizontal.rightleft
 	}
 
 	bottom_panel[s].widgets = {
+		separator, hddtempwidget,hddtempicon,
 		separator, fs_home.widget,fs_home_label,fs_root.widget,fs_root_label,fsicon,
 		separator, tzswidget,cpu_core_1.widget,cpu_core_2.widget,cpu_core_3.widget,cpu_core_4.widget,
 		separator, cpu_graph.widget, cpuicon,
-		separator, hddtempwidget,hddtempicon,
 		separator, memwidget.widget, memicon,
-    	        separator, upicon,network,dnicon,
- 		separator, musicwidget.widget,
+		separator,upicon,network,dnicon,
+		separator, musicwidget.widget,
 		layout = awful.widget.layout.horizontal.rightleft
 	}
 end
@@ -328,11 +152,9 @@ end
 -- {{{ Назначение кнопок мыши
 root.buttons(
 	awful.util.table.join(
-    		awful.button({ }, 3, function () mymainmenu:toggle() end),
+		awful.button({ }, 3, function () mymainmenu:toggle() end),
 		awful.button({ }, 4, awful.tag.viewnext),
-    		awful.button({ }, 5, awful.tag.viewprev)
-	)
-)
+		awful.button({ }, 5, awful.tag.viewprev) ) )
 -- }}}
 
 -- {{{ Назаначние кноком клавиатуры
@@ -341,13 +163,12 @@ globalkeys = awful.util.table.join(
 	awful.key({ modkey,           }, "Left",   awful.tag.viewprev       ),
 	awful.key({ modkey,           }, "Right",  awful.tag.viewnext       ),
 	awful.key({ modkey,           }, "Escape", awful.tag.history.restore),
-	-- }}
 	-- Блокировка экрана
-	awful.key({ modkey, "Control" }, "l", function () awful.util.spawn("slock") end),
+	awful.key({ modkey, "Control" }, "l", function () exec("slimlock") end),
 	-- {{ Медиа кнопки управления плеером
 	awful.key({ }, "XF86AudioNext",  musicwidget:command_next_track()),
-	awful.key({ }, "XF86AudioPrev",  musicwidget:command_prev_track()), 
-	awful.key({ }, "XF86AudioStop",  musicwidget:command_stop()), 
+	awful.key({ }, "XF86AudioPrev",  musicwidget:command_prev_track()),
+	awful.key({ }, "XF86AudioStop",  musicwidget:command_stop()),
 	awful.key({ }, "XF86AudioPlay",  musicwidget:command_playpause()),
 	-- }}
 	-- {{Управление громкостью
@@ -363,7 +184,6 @@ globalkeys = awful.util.table.join(
 				client.focus:raise()
 			end
 		end),
-	
 	awful.key({ modkey,           }, "k",
 		function ()
 			awful.client.focus.byidx(-1)
@@ -390,10 +210,9 @@ globalkeys = awful.util.table.join(
 		end),
 	-- }}
 	-- Standard program
-	awful.key({ modkey,           }, "Return", function () awful.util.spawn(terminal) end),
+	awful.key({ modkey,           }, "Return", function () exec(terminal) end),
 	awful.key({ modkey, "Control" }, "r", awesome.restart),
 	awful.key({ modkey, "Shift"   }, "q", awesome.quit),
-
 	awful.key({ modkey,           }, "l",     function () awful.tag.incmwfact( 0.05)    end),
 	awful.key({ modkey,           }, "h",     function () awful.tag.incmwfact(-0.05)    end),
 	awful.key({ modkey, "Shift"   }, "h",     function () awful.tag.incnmaster( 1)      end),
@@ -412,8 +231,7 @@ globalkeys = awful.util.table.join(
 			mypromptbox[mouse.screen].widget,
 			awful.util.eval, nil,
 			awful.util.getdir("cache") .. "/history_eval")
-		end)
-)
+		end) )
 
 clientkeys = awful.util.table.join(
 	awful.key({ modkey,           }, "f",      function (c) c.fullscreen = not c.fullscreen  end),
@@ -428,8 +246,7 @@ clientkeys = awful.util.table.join(
 		function (c)
 			c.maximized_horizontal = not c.maximized_horizontal
 			c.maximized_vertical   = not c.maximized_vertical
-		end)
-)
+		end) )
 -- Compute the maximum number of digit we need, limited to 9
 keynumber = 0
 for s = 1, screen.count() do
@@ -469,7 +286,7 @@ end
 clientbuttons = awful.util.table.join(
 	awful.button({ }, 1, function (c) client.focus = c; c:raise() end),
 	awful.button({ modkey }, 1, awful.mouse.client.move),
-	awful.button({ modkey }, 3, awful.mouse.client.resize))
+	awful.button({ modkey }, 3, awful.mouse.client.resize) )
 
 -- Set keys
 root.keys(globalkeys)
@@ -479,56 +296,57 @@ root.keys(globalkeys)
 awful.rules.rules = {
 	{
 		rule = { },
-		properties = { 
-	      	border_width = beautiful.border_width,
-                border_color = beautiful.border_normal,
-                focus = true,
-                keys = clientkeys,
-		maximized_vertical   = false,
-		maximized_horizontal = false,
-                buttons = clientbuttons }
+		properties = {
+			border_width = beautiful.border_width,
+			border_color = beautiful.border_normal,
+			focus = true,
+			keys = clientkeys,
+			maximized_vertical   = false,
+			maximized_horizontal = false,
+			buttons = clientbuttons
+		}
 	},
-		     
+
 	{ rule = { class = "MPlayer"  		}, properties = { floating = false , tag = tags[1][9]	} },
-	{ rule = { class = "feh" 		}, properties = { floating = true 			} },
-	{ rule = { class = "gimp" 	  	}, properties = { floating = false 			} },
+	{ rule_any = { class = {
+			"feh",
+			"Keepassx",
+			"Deadbeef",
+			"Znotes",
+			"Exe"
+			}
+		}, properties = { floating=true }},
+	{ rule = { class = "Gimp" 	  	}, properties = { floating = false 			} },
 	{ rule = { class = "Chromium-browser"   }, properties = { tag = tags[1][2],floating=false 	} },
 	{ rule = { class = "Vacuum"		}, properties = { tag = tags[1][1] 			} },
 	{ rule = { class = "Dolphin" 		}, properties = { tag = tags[1][6]			} },
-	{ rule = { class = "Keepassx"		}, properties = { floating = true			} },
-	{ rule = { class = "Deadbeef"		}, properties = { floating = true 			} },
-	{ rule = { class = "Znotes"		}, properties = { floating = true 			} },
 	{ rule = { class = "Qtcreator"		}, properties = { tag = tags[1][3] 			} },
-	{ rule = { class = "Exe"	 	}, properties = { floating = true 			} },
-	{ rule = { class = "Kate" 		}, properties = { floating = false 			} }
+	{ rule = { class = "Kate" 		}, properties = { floating = false 			} },
+	{ rule = { class = "Krusader" 		}, properties = { tag = tags[1][6] },callback = awful.placement.centered },
+	{ rule_any = { name = {
+				"Перемещение",
+				"Удаление",
+				"Процесс выполнения",
+				"Копирование",
+				"Распаковка файла*",
+				"Проверка архива"
+				}
+			},
+		properties = { tag = tags[1][6],floating=true },callback = awful.placement.centered }
 }
 
 -- }}}
-
 -- {{{ Signals
 -- Signal function to execute when a new client appears.
 client.add_signal("manage", function (c, startup)
-	-- dd a titlebar
-	if awful.client.floating.get(c) then
-		if   c.titlebar then 
-			awful.titlebar.remove(c)
-		else 
-			awful.titlebar.add(c, {modkey = modkey, height = "16"}) end
-		end
-
-	-- Enable sloppy focus
 	c:add_signal("mouse::enter", function(c)
-		if awful.layout.get(c.screen) ~= awful.layout.suit.magnifier and awful.client.focus.filter(c) then
-			client.focus = c
+		if awful.layout.get(c.screen) ~= awful.layout.suit.magnifier
+			and awful.client.focus.filter(c) then
+		client.focus = c
 		end
 	end)
 
 	if not startup then
-	-- Set the windows at the slave,
-        -- i.e. put it at the end of others instead of setting it master.
-        -- awful.client.setslave(c)
-
-        -- Put windows in a smart way, only if they does not set an initial position.
 		if not c.size_hints.user_position and not c.size_hints.program_position then
 			awful.placement.no_overlap(c)
 			awful.placement.no_offscreen(c)
@@ -539,10 +357,8 @@ end)
 client.add_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.add_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 -- }}}
-
 -- {{{ автозапуск приложений
 run_once("kbdd")
-run_once("parcellite")
-run_once("nm-applet")
+run_once("klipper")
 run_once("wmname","LG3D")
 -- }}}
