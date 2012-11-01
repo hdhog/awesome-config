@@ -7,6 +7,9 @@ require("naughty")
 require("cal")
 require("awesompd/awesompd")
 require("perceptive")
+local exec   	= awful.util.spawn
+local sexec  	= awful.util.spawn_with_shell
+
 --{{{ MPD виджет
 musicwidget 			= awesompd:create()
 musicwidget.font 		= "Snap 8"
@@ -259,3 +262,33 @@ wifi_icon:buttons( wifi_widget:buttons( awful.util.table.join(
 	end), -- left click
 awful.button({ }, 3, function ()  vicious.force{wifiwidget} end)
 )))
+
+function set_volume(flag)
+	
+	if flag then
+		exec("amixer set Master 2%+")
+	else
+		exec("amixer set Master 2%-")
+	end
+
+        local fd = io.popen("amixer sget Master")
+        local status = fd:read("*all")
+        fd:close()
+
+        local volume = tonumber(string.match(status, "(%d?%d?%d)%%"))
+	local pgbar = ""
+
+	for i = 0, 99, 1 do
+		if i < volume then
+			pgbar = pgbar .. '|'
+		else
+			pgbar = pgbar .. '.'
+		end
+	end 
+
+	if vol_info ~= nil then
+		vol_info = naughty.notify({title="Громкость " .. volume .. "%", text ="[".. pgbar .."]",replaces_id=vol_info.id})
+	else
+		vol_info = naughty.notify({title="Громкость " .. volume .. "%", text ="[".. pgbar .."]"})
+	end
+end

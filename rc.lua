@@ -172,8 +172,14 @@ globalkeys = awful.util.table.join(
 	awful.key({ }, "XF86AudioPlay",  musicwidget:command_playpause()),
 	-- }}
 	-- {{Управление громкостью
-	awful.key({ }, "XF86AudioRaiseVolume", function () exec("amixer set Master 2%+") end),
-	awful.key({ }, "XF86AudioLowerVolume", function () exec("amixer set Master 2%-") end),
+	awful.key({ }, "XF86AudioRaiseVolume", function () 
+			-- exec("amixer set Master 2%+") 
+			set_volume(true)
+	end),
+	awful.key({ }, "XF86AudioLowerVolume", function () 
+		--exec("amixer set Master 2%-") 
+		set_volume(false)
+	end),
 	awful.key({ }, "XF86AudioMute", function () exec("amixer sset Master toggle") end),
 	-- }}
 	-- {{ Переключение фокуса окна
