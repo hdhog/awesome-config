@@ -188,55 +188,44 @@ timer:start()
 -- {{{ Состояние файловой системы
 fs_home = blingbling.progress_graph.new()
 fs_home:set_height(12)
-fs_home:set_width(55)
+fs_home:set_width(65)
 fs_home:set_show_text(true)
 fs_home:set_text_color("#ffffffff")
---fs_home:set_font_size(10)
 fs_home:set_background_text_color("#00000000")
 fs_home:set_v_margin(0)
 fs_home:set_h_margin(0)
 fs_home:set_horizontal(true)
 fs_home:set_filled(true)
-fs_home:set_label("/home")
---fs_home:set_graph_line_color('#000000FF') -- цвет лининии бордюра
+fs_home:set_label(" /home")
 vicious.register(fs_home, vicious.widgets.fs, "${/home used_p}", 120)
 --
 fs_root = blingbling.progress_graph.new()
 fs_root:set_height(12)
-fs_root:set_width(55)
+fs_root:set_width(65)
 fs_root:set_show_text(true)
 fs_root:set_text_color("#ffffffff")
---fs_root:set_font_size(10)
 fs_root:set_background_text_color("#00000000")
 fs_root:set_horizontal(true)
 fs_root:set_filled(true)
 fs_root:set_v_margin(0)
-fs_root:set_label("/root")
+fs_root:set_label(" /root")
 vicious.register(fs_root, vicious.widgets.fs, "${/ used_p}", 120)
 
 fs_root_label = widget({ type = "textbox" })
-fs_root_label.text = ""--"/root: "
-
 fs_home_label = widget({ type = "textbox" })
-fs_home_label.text = ""--"/home: "
+
 -- }}}
 -- {{ Wifi
 wifi_icon = widget({type = "imagebox"})
 wifi_icon.image = image(beautiful.widget_wifi)
 wifi_widget = widget({type = "textbox"})
 
-local wifitooltip= awful.tooltip({})
-wifitooltip:add_to_object(wifi_widget)
-
 vicious.register(wifi_widget, vicious.widgets.wifi,
 	function(widget, args)
-		--local tooltip = ("<b>mode</b> %s <b>chan</b> %s <b>rate</b> %s Mb/s"):format(args["{mode}"], args["{chan}"], args["{rate}"])
 		local quality = 0
 		if args["{linp}"] > 0 then
 			quality = args["{link}"] / args["{linp}"] * 100
 		end
-		--wifitooltip:set_text(tooltip)
-
 		return ("%s: %.1f%%"):format(args["{ssid}"], quality)
 	end,
 7, "wlan0")
@@ -256,15 +245,11 @@ wifi_icon:buttons( wifi_widget:buttons( awful.util.table.join(
 		else
 		end
 	end),
-	awful.button({ "Shift" }, 1, function ()
-		local wpa_cmd = "sudo restart-auto-wireless && notify-send 'wpa_actiond' 'restarted' || notify-send 'wpa_actiond' 'error on restart'"
-		sexec(wpa_cmd)
-	end), -- left click
-awful.button({ }, 3, function ()  vicious.force{wifiwidget} end)
+	awful.button({ }, 3, function ()  vicious.force{wifiwidget} end)
 )))
 
 function set_volume(flag)
-	
+
 	if flag then
 		exec("amixer set Master 2%+")
 	else
@@ -284,11 +269,11 @@ function set_volume(flag)
 		else
 			pgbar = pgbar .. '.'
 		end
-	end 
+	end
 
 	if vol_info ~= nil then
-		vol_info = naughty.notify({title="Громкость " .. volume .. "%", text ="[".. pgbar .."]",replaces_id=vol_info.id})
+		vol_info = naughty.notify({ title="Громкость " .. volume .. "%", text ="[".. pgbar .."]", replaces_id=vol_info.id })
 	else
-		vol_info = naughty.notify({title="Громкость " .. volume .. "%", text ="[".. pgbar .."]"})
+		vol_info = naughty.notify({ title="Громкость " .. volume .. "%", text ="[".. pgbar .."]" })
 	end
 end

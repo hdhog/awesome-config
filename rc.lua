@@ -133,17 +133,16 @@ for s = 1, screen.count() do
 		separator, volwidget, volbar.widget, volicon,
 		separator, gmail, gmailicon,
 		separator, wifi_widget,wifi_icon,
-		--separator, weather_widget,
 		separator, layout = awful.widget.layout.horizontal.rightleft
 	}
 
 	bottom_panel[s].widgets = {
 		separator, hddtempwidget,hddtempicon,
-		separator, fs_home.widget,fs_home_label,fs_root.widget,fs_root_label,fsicon,
+		separator, fs_home.widget,separator,fs_root.widget,fsicon,
 		separator, tzswidget,cpu_core_1.widget,cpu_core_2.widget,cpu_core_3.widget,cpu_core_4.widget,
 		separator, cpu_graph.widget, cpuicon,
 		separator, memwidget.widget, memicon,
-		separator,upicon,network,dnicon,
+		separator, upicon,network,dnicon,
 		separator, musicwidget.widget,
 		layout = awful.widget.layout.horizontal.rightleft
 	}
@@ -172,12 +171,12 @@ globalkeys = awful.util.table.join(
 	awful.key({ }, "XF86AudioPlay",  musicwidget:command_playpause()),
 	-- }}
 	-- {{Управление громкостью
-	awful.key({ }, "XF86AudioRaiseVolume", function () 
-			-- exec("amixer set Master 2%+") 
+	awful.key({ }, "XF86AudioRaiseVolume", function ()
+			-- exec("amixer set Master 2%+")
 			set_volume(true)
 	end),
-	awful.key({ }, "XF86AudioLowerVolume", function () 
-		--exec("amixer set Master 2%-") 
+	awful.key({ }, "XF86AudioLowerVolume", function ()
+		--exec("amixer set Master 2%-")
 		set_volume(false)
 	end),
 	awful.key({ }, "XF86AudioMute", function () exec("amixer sset Master toggle") end),

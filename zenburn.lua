@@ -4,7 +4,7 @@
 --    License:  GNU GPL v2   --
 -------------------------------
 
-
+require("naughty")
 -- {{{ Main
 theme = {}
 theme.confdir       = awful.util.getdir("config")
@@ -16,6 +16,7 @@ theme.wallpaper_cmd = { "awsetbg /home/serg/.config/awesome/gerb.jpg" }
 -- {{{ Styles
 theme.font        = "Snap 8"
 theme.notify_font = "Snap 8"
+theme.notify_default_bg   = "white"
 -- {{{ Colors
 theme.fg_normal = "#DCDCCC"
 theme.fg_focus  = "#F0DFAF"
@@ -141,6 +142,12 @@ theme.titlebar_maximized_button_focus_inactive  = theme.confdir .. "/icons/title
 theme.titlebar_maximized_button_normal_inactive = theme.confdir .. "/icons/titlebar/maximized_normal_inactive.png"
 -- }}}
 -- }}}
+naughty.config.presets.normal.bg = "#444444"
+naughty.config.presets.normal.fg = "#DCDCCC"
+naughty.config.presets.normal.border_color = "black"
 
+naughty.config.presets.critical.bg = "#444444"
+naughty.config.presets.critical.fg = "#DCDCCC"
+naughty.config.presets.critical.border_color = "red"
 
 return theme
