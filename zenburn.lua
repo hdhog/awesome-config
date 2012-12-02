@@ -1,15 +1,18 @@
--------------------------------
+
 --  "Zenburn" awesome theme  --
 --    By Adrian C. (anrxc)   --
 --    License:  GNU GPL v2   --
 -------------------------------
 
-require("naughty")
+local naughty = require("naughty")
+local awful = require("awful")
+awful.util = require("awful.util")
+
 -- {{{ Main
 theme = {}
 theme.confdir       = awful.util.getdir("config")
 --theme.wallpaper_cmd = { "/usr/bin/nitrogen --restore" }
-theme.wallpaper_cmd = { "awsetbg /home/serg/.config/awesome/gerb.jpg" }
+theme.wallpaper = theme.confdir .. "/gerb.jpg" 
 -- }}}
 
 

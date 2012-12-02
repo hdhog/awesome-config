@@ -3,10 +3,15 @@ require("blingbling")
 require("awesompd/awesompd")
 require("iwlist")
 require("markup")
-require("naughty")
+naughty = require("naughty")
 require("cal")
 require("awesompd/awesompd")
 require("perceptive")
+
+local awful = require("awful")
+local wibox = require("wibox")
+local beautiful = require("beautiful")
+awful.util = require("awful.util")
 local exec   	= awful.util.spawn
 local sexec  	= awful.util.spawn_with_shell
 
@@ -35,41 +40,41 @@ musicwidget:register_buttons({
 			})
 musicwidget:run()
 -- {{{ Создание виджета разделителя
-separator 	= widget({ type = "imagebox" })
-separator.image = image( beautiful.widget_sep )
+separator 	= wibox.widget.imagebox()--wibox.widget.imagebox()
+separator:set_image(beautiful.widget_sep )
 -- }}}
 -- {{{ Виджет батареи
-baticon 	= widget({ type = "imagebox" })
-baticon.image 	= image(beautiful.widget_bat)
-batwidget 	= widget({ type = "textbox" })
+baticon 	= wibox.widget.imagebox() --wibox.widget.imagebox()
+baticon:set_image(beautiful.widget_bat)
+batwidget 	= wibox.widget.textbox()--wibox.widget.textbox()
 vicious.register(batwidget, vicious.widgets.bat,"$2%", 60, "BAT0")
 -- }}}
 
 -- {{{ Видежет отображения раскладки для работы требудется kbdd
-kbdwidget 		= widget({type = "textbox", name = "kbdwidget"})
+kbdwidget 		= wibox.widget.textbox()--widget({type = "textbox", name = "kbdwidget"})
 kbdwidget.border_width 	= 0
 kbdwidget.border_color 	= beautiful.fg_normal
-kbdwidget.text 		= " En "
+kbdwidget:set_text( " En " )
 dbus.request_name("session", "ru.gentoo.kbdd")
 dbus.add_match("session", "interface='ru.gentoo.kbdd',member='layoutChanged'")
-dbus.add_signal("ru.gentoo.kbdd",
+dbus.connect_signal("ru.gentoo.kbdd",
 	function(...)
 		local data = {...}
 		local layout = data[2]
 		lts = {[0] = "En", [1] = "Ru"}
-		kbdwidget.text = " "..lts[layout].." "
+		kbdwidget:set_text( " "..lts[layout].." ")
 	end)
 -- }}}
 -- {{{ Виджет управления громкостью
-volicon 	= widget({ type = "imagebox" })
-volicon.image 	= image(beautiful.widget_vol)
+volicon 	= wibox.widget.imagebox()
+volicon:set_image(beautiful.widget_vol)
 volbar 		= awful.widget.progressbar()
-volwidget 	= widget({ type = "textbox" })
+volwidget 	= wibox.widget.textbox()
 -- Параметры прогресс бара
 volbar:set_vertical(true):set_ticks(true)
 volbar:set_height(12):set_width(6):set_ticks_size(1)
 volbar:set_background_color(beautiful.fg_off_widget)
-volbar:set_gradient_colors({ beautiful.fg_widget, beautiful.fg_center_widget, beautiful.fg_end_widget })
+--volbar:set_gradient_colors({ beautiful.fg_widget, beautiful.fg_center_widget, beautiful.fg_end_widget })
 -- Enable caching
 vicious.cache(vicious.widgets.volume)
 -- Регистрация виджета
@@ -78,15 +83,15 @@ vicious.register(volwidget, vicious.widgets.volume, " $1%", 2, "Master")
 -- }}}
 
 -- {{{ Виджет отображающий время и календарь
-datewidget = widget({ type = "textbox" })
+datewidget = wibox.widget.textbox()
 cal.register(datewidget, markup.bg(beautiful.fg_normal,'<span color="#ff0000"><b>%s</b></span>'))
 vicious.register(datewidget, vicious.widgets.date, " %R ", 61)
 -- }}}
 
 -- {{{ Загрука и температура процессора
-cpuicon 	= widget({ type = "imagebox" })
-cpuicon.image 	= image(beautiful.widget_cpu)
-tzswidget 	= widget({ type = "textbox" })
+cpuicon 	= wibox.widget.imagebox()
+cpuicon:set_image(beautiful.widget_cpu)
+tzswidget 	= wibox.widget.textbox()
 vicious.register(tzswidget, vicious.widgets.thermal, " $1°C", 19, "thermal_zone0")
 
 cpu_graph = blingbling.classical_graph.new()
@@ -135,8 +140,8 @@ cpu_core_4:set_filled_color("#00000033")
 vicious.register(cpu_core_4, vicious.widgets.cpu, "$5")
 --}}}
 -- {{{ Использование памяти
-memicon 	= widget( { type = "imagebox" })
-memicon.image 	= image(beautiful.widget_mem)
+memicon 	= wibox.widget.imagebox()
+memicon:set_image(beautiful.widget_mem)
 memwidget 	= blingbling.classical_graph.new()
 memwidget:set_height(12)
 memwidget:set_width(85)
@@ -149,28 +154,28 @@ vicious.register(memwidget, vicious.widgets.mem, '$1', 5)
 -- {{{ Загрука сети
 --  TODO запилить несолько интерфейсов
 --  FIXME пофиксить отображение если ни один из контролируемых интерфейсов не поднят
-dnicon 		= widget({ type = "imagebox" })
-upicon 		= widget({ type = "imagebox" })
-dnicon.image 	= image(beautiful.widget_net)
-upicon.image 	= image(beautiful.widget_netup)
+dnicon 		= wibox.widget.imagebox()
+upicon 		= wibox.widget.imagebox()
+dnicon:set_image(beautiful.widget_net)
+upicon:set_image(beautiful.widget_netup)
 
-network = widget({ type = "textbox" })
+network = wibox.widget.textbox()
 vicious.register(network, vicious.widgets.net, '<span color="#CC9393">${wlan0 up_kb} Kb/s</span> : <span color="#7F9F7F">${wlan0 down_kb} Kb/s</span>', 3)
 
 -- {{{ Температура HDD
-hddtempicon 		= widget({ type = "imagebox" })
-hddtempicon.image 	= image(beautiful.widget_temp)
-hddtempwidget 		= widget({ type = "textbox" })
+hddtempicon 		= wibox.widget.imagebox()
+hddtempicon:set_image(beautiful.widget_temp)
+hddtempwidget 		= wibox.widget.textbox()
 vicious.register(hddtempwidget, vicious.widgets.hddtemp, "${/dev/sda}°C", 19)
 --}}}
 
 --{{{ Gmail уведомления о почте
-gmailicon = widget({type = "imagebox"})
-gmailicon.image = image (beautiful.widget_mail)
-gmail = widget({ type = "textbox" })
-gmail.text = "?"
+gmailicon = wibox.widget.imagebox()-- widget({type = "imagebox"})
+gmailicon:set_image(beautiful.widget_mail)
+gmail = wibox.widget.textbox()
+gmail:set_text( "?" )
 timer = timer{ timeout = 30 }
-timer:add_signal("timeout", function ()
+timer:connect_signal("timeout", function ()
 	local f = io.open("/tmp/gmail","rw")
 	local l = nil
 	if ( f ) then
@@ -179,7 +184,7 @@ timer:add_signal("timeout", function ()
 	else
 		l = "?"
 	end
-	gmail.text = l
+	gmail:set_markup(l)
 	os.execute("~/.config/awesome/gmail.py > /tmp/gmail &")
 end)
 timer:start()
@@ -211,14 +216,14 @@ fs_root:set_v_margin(0)
 fs_root:set_label(" /root")
 vicious.register(fs_root, vicious.widgets.fs, "${/ used_p}", 120)
 
-fs_root_label = widget({ type = "textbox" })
-fs_home_label = widget({ type = "textbox" })
+--fs_root_label = wibox.widget.textbox()
+--fs_home_label = wibox.widget.textbox()
 
 -- }}}
 -- {{ Wifi
-wifi_icon = widget({type = "imagebox"})
-wifi_icon.image = image(beautiful.widget_wifi)
-wifi_widget = widget({type = "textbox"})
+wifi_icon = wibox.widget.imagebox()
+wifi_icon:set_image(beautiful.widget_wifi)
+wifi_widget = wibox.widget.textbox()
 
 vicious.register(wifi_widget, vicious.widgets.wifi,
 	function(widget, args)

@@ -1,7 +1,19 @@
-require("awful")
-require("awful.autofocus")
-require("awful.rules")
 
+local gears = require("gears")
+local awful = require("awful")
+awful.rules = require("awful.rules")
+require("awful.autofocus")
+-- Widget and layout library
+local wibox = require("wibox")
+-- Theme handling library
+local beautiful = require("beautiful")
+-- Notification library
+local naughty = require("naughty")
+local menubar = require("menubar")
+
+--require("awful.autofocus")
+--require("awful.rules")
+naughty = require("naughty")
 -- Установка локализации
 os.setlocale(os.getenv("LANG"))
 
@@ -13,21 +25,19 @@ if awesome.startup_errors then
 	})
 end
 
--- Отображение ошибок
+-- Handle runtime errors after startup
 do
-	local in_error = false
-	awesome.add_signal("debug::error", function (err)
-		if in_error then
-			return
-		end
-		in_error = true
+    local in_error = false
+    awesome.connect_signal("debug::error", function (err)
+        -- Make sure we don't go into an endless error loop
+        if in_error then return end
+        in_error = true
 
-		naughty.notify({
-			preset = naughty.config.presets.critical,
-			title = "Oops, произошла ошибка!", text = err
-		})
-		in_error = false
-	end)
+        naughty.notify({ preset = naughty.config.presets.critical,
+                         title = "Oops, an error happened!",
+                         text = err })
+        in_error = false
+    end)
 end
 
 -- }}}
@@ -44,8 +54,9 @@ end
 
 -- {{{ Variable definitions
 -- Путь до файла с темой.
-beautiful.init("/home/serg/.config/awesome/zenburn.lua")
 confdir="/home/serg/.config"
+beautiful.init(confdir .. "/awesome/zenburn.lua")
+
 local exec   	= awful.util.spawn
 local sexec  	= awful.util.spawn_with_shell
 terminal	= "urxvt -tr"
@@ -85,7 +96,9 @@ require("mymenu")
 
 -- {{{ Wibox
 -- Трей
-mysystray = widget({ type = "systray" })
+--wibox.widget.textbox()
+--wibox.widget.imagebox()
+mysystray = wibox.widget.systray()
 -- верхняя панель
 top_panel = {}
 -- нижняя панель
@@ -107,7 +120,7 @@ require("widgets")
 -- {{{
 for s = 1, screen.count() do
 	-- запуск внешних команд
-	mypromptbox[s] = awful.widget.prompt({ layout = awful.widget.layout.horizontal.leftright })
+	mypromptbox[s] = awful.widget.prompt()--{ layout = awful.widget.layout.horizontal.leftright })
 	mylayoutbox[s] = awful.widget.layoutbox(s)
 	mylayoutbox[s]:buttons(awful.util.table.join(
 				awful.button({ }, 1, function () awful.layout.inc(layouts, 1) end),
@@ -115,37 +128,84 @@ for s = 1, screen.count() do
 				awful.button({ }, 4, function () awful.layout.inc(layouts, 1) end),
 				awful.button({ }, 5, function () awful.layout.inc(layouts, -1) end)))
 	-- Список тегов
-	mytaglist[s] = awful.widget.taglist(s, awful.widget.taglist.label.all, mytaglist.buttons)
+	mytaglist[s] = awful.widget.taglist(s, awful.widget.taglist.filter.all, mytaglist.buttons)
 
 	-- Создание панелей
 	top_panel[s] 	= awful.wibox({ position = "top",    screen = s , height=12})
 	bottom_panel[s] = awful.wibox({ position = "bottom", screen = s , height=12})
 
-	top_panel[s].widgets = {
-		{
-			mytaglist[s],
-			mypromptbox[s],
-			layout = awful.widget.layout.horizontal.leftright
-		},
-		mylayoutbox[s], datewidget,
-		separator, s == 1 and mysystray or nil,
-		separator, kbdwidget, batwidget, baticon,
-		separator, volwidget, volbar.widget, volicon,
-		separator, gmail, gmailicon,
-		separator, wifi_widget,wifi_icon,
-		separator, layout = awful.widget.layout.horizontal.rightleft
-	}
+	local left_layout = wibox.layout.fixed.horizontal()
+	left_layout:add(mytaglist[s])
+	left_layout:add(mypromptbox[s])
 
-	bottom_panel[s].widgets = {
-		separator, hddtempwidget,hddtempicon,
-		separator, fs_home.widget,separator,fs_root.widget,fsicon,
-		separator, tzswidget,cpu_core_1.widget,cpu_core_2.widget,cpu_core_3.widget,cpu_core_4.widget,
-		separator, cpu_graph.widget, cpuicon,
-		separator, memwidget.widget, memicon,
-		separator, upicon,network,dnicon,
-		separator, musicwidget.widget,
-		layout = awful.widget.layout.horizontal.rightleft
-	}
+	local right_layout = wibox.layout.fixed.horizontal()
+	right_layout:add(separator)
+	right_layout:add(wifi_icon)
+	right_layout:add(wifi_widget)
+	right_layout:add(separator)
+	right_layout:add(gmailicon)
+	right_layout:add(gmail)
+	right_layout:add(separator)
+	right_layout:add(baticon)
+	right_layout:add(batwidget)
+	right_layout:add(separator)
+	right_layout:add(volicon)
+	right_layout:add(volwidget)
+	right_layout:add(volbar)
+	right_layout:add(separator)
+	right_layout:add(kbdwidget)
+	right_layout:add(separator)
+	if s == 1 then right_layout:add(mysystray) end
+	right_layout:add(datewidget)
+	right_layout:add(separator)
+	right_layout:add(mylayoutbox[s])
+
+	local layout = wibox.layout.align.horizontal()
+	layout:set_left(left_layout)
+        layout:set_right(right_layout)
+
+ 	top_panel[s]:set_widget(layout)
+
+	local bottom_right_layout = wibox.layout.fixed.horizontal()
+
+	bottom_right_layout:add(musicwidget.widget)
+	bottom_right_layout:add(separator)
+
+	bottom_right_layout:add(dnicon)
+	bottom_right_layout:add(network)
+	bottom_right_layout:add(upicon)
+	bottom_right_layout:add(separator)
+
+	bottom_right_layout:add(hddtempicon)
+	bottom_right_layout:add(hddtempwidget)
+	bottom_right_layout:add(separator)
+
+	bottom_right_layout:add(memicon)
+	bottom_right_layout:add(memwidget.widget)
+	bottom_right_layout:add(separator)
+
+	bottom_right_layout:add(cpuicon)
+	bottom_right_layout:add(tzswidget)
+	bottom_right_layout:add(cpu_core_1.widget)
+	bottom_right_layout:add(cpu_core_2.widget)
+	bottom_right_layout:add(cpu_core_3.widget)
+	bottom_right_layout:add(cpu_core_4.widget)
+
+	bottom_right_layout:add(cpu_graph.widget)
+
+
+	bottom_right_layout:add(separator)
+
+
+	bottom_right_layout:add(fs_home.widget)
+	bottom_right_layout:add(separator)
+	bottom_right_layout:add(fs_root.widget)
+
+	local bottom_layout = wibox.layout.align.horizontal()
+        bottom_layout:set_right(bottom_right_layout)
+
+	bottom_panel[s]:set_widget(bottom_layout)
+
 end
 -- }}}
 -- {{{ Назначение кнопок мыши
