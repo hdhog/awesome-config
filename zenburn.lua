@@ -12,7 +12,7 @@ awful.util = require("awful.util")
 theme = {}
 theme.confdir       = awful.util.getdir("config")
 --theme.wallpaper_cmd = { "/usr/bin/nitrogen --restore" }
-theme.wallpaper = theme.confdir .. "/gerb.jpg" 
+theme.wallpaper = theme.confdir .. "/gerb.jpg"
 -- }}}
 
 
@@ -147,10 +147,10 @@ theme.titlebar_maximized_button_normal_inactive = theme.confdir .. "/icons/title
 -- }}}
 naughty.config.presets.normal.bg = "#444444"
 naughty.config.presets.normal.fg = "#DCDCCC"
-naughty.config.presets.normal.border_color = "black"
+naughty.config.presets.normal.border_color = "#000000"
 
 naughty.config.presets.critical.bg = "#444444"
 naughty.config.presets.critical.fg = "#DCDCCC"
-naughty.config.presets.critical.border_color = "red"
+naughty.config.presets.critical.border_color = "#FF0000"
 
 return theme
