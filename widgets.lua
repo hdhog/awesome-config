@@ -1,13 +1,12 @@
 local vicious = require("vicious")
+local gears = require("gears")
 require("blingbling")
 require("awesompd/awesompd")
 require("iwlist")
 require("markup")
-naughty = require("naughty")
-require("cal")
+local naughty = require("naughty")
+local cal = require("cal")
 require("awesompd/awesompd")
-require("perceptive")
-
 local awful = require("awful")
 local wibox = require("wibox")
 local beautiful = require("beautiful")
@@ -39,6 +38,7 @@ musicwidget:register_buttons({
 				{ "", awesompd.MOUSE_RIGHT, musicwidget:command_show_menu() }
 			})
 musicwidget:run()
+--}}}
 -- {{{ Создание виджета разделителя
 separator 	= wibox.widget.imagebox()--wibox.widget.imagebox()
 separator:set_image(beautiful.widget_sep )
@@ -47,7 +47,7 @@ separator:set_image(beautiful.widget_sep )
 baticon 	= wibox.widget.imagebox() --wibox.widget.imagebox()
 baticon:set_image(beautiful.widget_bat)
 batwidget 	= wibox.widget.textbox()--wibox.widget.textbox()
-vicious.register(batwidget, vicious.widgets.bat,"$2%", 60, "BAT0")
+vicious.register(batwidget, vicious.widgets.bat,"$2%", 120, "BAT0")
 -- }}}
 
 -- {{{ Видежет отображения раскладки для работы требудется kbdd
@@ -66,89 +66,85 @@ dbus.connect_signal("ru.gentoo.kbdd",
 	end)
 -- }}}
 -- {{{ Виджет управления громкостью
+-- TODO запилить свой виджет отображения громкости. 
 volicon 	= wibox.widget.imagebox()
 volicon:set_image(beautiful.widget_vol)
-volbar 		= awful.widget.progressbar()
 volwidget 	= wibox.widget.textbox()
--- Параметры прогресс бара
-volbar:set_vertical(true):set_ticks(true)
-volbar:set_height(12):set_width(6):set_ticks_size(1)
-volbar:set_background_color(beautiful.fg_off_widget)
---volbar:set_gradient_colors({ beautiful.fg_widget, beautiful.fg_center_widget, beautiful.fg_end_widget })
--- Enable caching
+--volbar = blingbling.progress_graph.new()
+--volbar:set_height(12)
+--volbar:set_width(6)
+--volbar:set_h_margin(0)
+--volbar:set_v_margin(0)
+
+-- TODO сделать обновление инфы о громкости не по таймеру.
 vicious.cache(vicious.widgets.volume)
 -- Регистрация виджета
-vicious.register(volbar,    vicious.widgets.volume,  "$1",  2, "Master")
-vicious.register(volwidget, vicious.widgets.volume, " $1%", 2, "Master")
+--vicious.register(volbar,    vicious.widgets.volume,  "$1",  5, "Master")
+vicious.register(volwidget, vicious.widgets.volume, "$1%", 5, "Master")
 -- }}}
 
 -- {{{ Виджет отображающий время и календарь
 datewidget = wibox.widget.textbox()
 cal.register(datewidget, markup.bg(beautiful.fg_normal,'<span color="#ff0000"><b>%s</b></span>'))
-vicious.register(datewidget, vicious.widgets.date, " %R ", 61)
+vicious.register(datewidget, vicious.widgets.date, " %R ", 60)
 -- }}}
 
 -- {{{ Загрука и температура процессора
 cpuicon 	= wibox.widget.imagebox()
 cpuicon:set_image(beautiful.widget_cpu)
 tzswidget 	= wibox.widget.textbox()
-vicious.register(tzswidget, vicious.widgets.thermal, " $1°C", 19, "thermal_zone0")
+vicious.register(tzswidget, vicious.widgets.thermal, "$1°C", 19, "thermal_zone0")
 
-cpu_graph = blingbling.classical_graph.new()
+cpu_graph = blingbling.line_graph.new()
+cpu_graph:set_width(100)
 cpu_graph:set_height(12)
-cpu_graph:set_width(85)
+cpu_graph:set_h_margin(0)
 cpu_graph:set_v_margin(0)
-cpu_graph:set_tiles_color("#00000022")
 cpu_graph:set_show_text(false)
-cpu_graph:set_filled(true)
+cpu_graph:set_background_color("#00000044")
+--cpu_graph:set_graph_background_color("#000000")
+cpu_graph:set_graph_line_color("#FF000000")
 vicious.register(cpu_graph, vicious.widgets.cpu,'$1',2)
 --
-cpu_core_1 = blingbling.progress_graph.new()
-cpu_core_1:set_height(12)
-cpu_core_1:set_width(6)
-cpu_core_1:set_filled(true)
-cpu_core_1:set_h_margin(1)
-cpu_core_1:set_v_margin(0)
-cpu_core_1:set_filled_color("#00000033")
-vicious.register(cpu_core_1, vicious.widgets.cpu, "$2")
+--cpu_core_1 = blingbling.progress_graph.new()
+--cpu_core_1:set_height(12)
+--cpu_core_1:set_width(6)
+--cpu_core_1:set_h_margin(1)
+--cpu_core_1:set_v_margin(0)
+--vicious.register(cpu_core_1, vicious.widgets.cpu, "$2",2)
 
-cpu_core_2 	= blingbling.progress_graph.new()
-cpu_core_2:set_height(12)
-cpu_core_2:set_width(6)
-cpu_core_2:set_filled(true)
-cpu_core_2:set_h_margin(1)
-cpu_core_2:set_v_margin(0)
-cpu_core_2:set_filled_color("#00000033")
-vicious.register(cpu_core_2, vicious.widgets.cpu, "$3")
+--cpu_core_2 = blingbling.progress_graph.new()
+--cpu_core_2:set_height(12)
+--cpu_core_2:set_width(6)
+--cpu_core_2:set_h_margin(1)
+--cpu_core_2:set_v_margin(0)
+--vicious.register(cpu_core_2, vicious.widgets.cpu, "$3",2)
 
-cpu_core_3 	= blingbling.progress_graph.new()
-cpu_core_3:set_height(12)
-cpu_core_3:set_width(6)
-cpu_core_3:set_filled(true)
-cpu_core_3:set_h_margin(1)
-cpu_core_3:set_v_margin(0)
-cpu_core_3:set_filled_color("#00000033")
-vicious.register(cpu_core_3, vicious.widgets.cpu, "$4")
+--cpu_core_3 	= blingbling.progress_graph.new()
+--cpu_core_3:set_height(12)
+--cpu_core_3:set_width(6)
+--cpu_core_3:set_h_margin(1)
+--cpu_core_3:set_v_margin(0)
+--vicious.register(cpu_core_3, vicious.widgets.cpu, "$4",2)
 
-cpu_core_4 	= blingbling.progress_graph.new()
-cpu_core_4:set_height(12)
-cpu_core_4:set_width(6)
-cpu_core_4:set_filled(true)
-cpu_core_4:set_h_margin(1)
-cpu_core_4:set_v_margin(0)
-cpu_core_4:set_filled_color("#00000033")
-vicious.register(cpu_core_4, vicious.widgets.cpu, "$5")
+--cpu_core_4 	= blingbling.progress_graph.new()
+--cpu_core_4:set_height(12)
+--cpu_core_4:set_width(6)
+--cpu_core_4:set_h_margin(1)
+--cpu_core_4:set_v_margin(0)
+--vicious.register(cpu_core_4, vicious.widgets.cpu, "$5",2)
 --}}}
 -- {{{ Использование памяти
 memicon 	= wibox.widget.imagebox()
 memicon:set_image(beautiful.widget_mem)
-memwidget 	= blingbling.classical_graph.new()
+memwidget 	= blingbling.line_graph.new()
 memwidget:set_height(12)
-memwidget:set_width(85)
+memwidget:set_width(100)
 memwidget:set_v_margin(0)
-memwidget:set_filled(true)
-memwidget:set_tiles_color("#00000022")
+memwidget:set_h_margin(0)
+memwidget:set_graph_line_color("#FF000000")
 memwidget:set_show_text(false)
+memwidget:set_background_color("#00000044")
 vicious.register(memwidget, vicious.widgets.mem, '$1', 5)
 -- }}}
 -- {{{ Загрука сети
@@ -166,7 +162,7 @@ vicious.register(network, vicious.widgets.net, '<span color="#CC9393">${wlan0 up
 hddtempicon 		= wibox.widget.imagebox()
 hddtempicon:set_image(beautiful.widget_temp)
 hddtempwidget 		= wibox.widget.textbox()
-vicious.register(hddtempwidget, vicious.widgets.hddtemp, "${/dev/sda}°C", 19)
+vicious.register(hddtempwidget, vicious.widgets.hddtemp, "${/dev/sda}°C", 30)
 --}}}
 
 --{{{ Gmail уведомления о почте
@@ -200,7 +196,7 @@ fs_home:set_background_text_color("#00000000")
 fs_home:set_v_margin(0)
 fs_home:set_h_margin(0)
 fs_home:set_horizontal(true)
-fs_home:set_filled(true)
+--fs_home:set_filled(true)
 fs_home:set_label(" /home")
 vicious.register(fs_home, vicious.widgets.fs, "${/home used_p}", 120)
 --
@@ -211,7 +207,7 @@ fs_root:set_show_text(true)
 fs_root:set_text_color("#ffffffff")
 fs_root:set_background_text_color("#00000000")
 fs_root:set_horizontal(true)
-fs_root:set_filled(true)
+--fs_root:set_filled(true)
 fs_root:set_v_margin(0)
 fs_root:set_label(" /root")
 vicious.register(fs_root, vicious.widgets.fs, "${/ used_p}", 120)
@@ -261,24 +257,31 @@ function set_volume(flag)
 		exec("amixer set Master 2%-")
 	end
 
-        local fd = io.popen("amixer sget Master")
-        local status = fd:read("*all")
+        fd = io.popen("amixer sget Master")
+        status = fd:read("*all")
         fd:close()
 
-        local volume = tonumber(string.match(status, "(%d?%d?%d)%%"))
-	local pgbar = ""
+        volume = tonumber(string.match(status, "(%d?%d?%d)%%"))
+	pgbar = ""
 
 	for i = 0, 99, 1 do
 		if i < volume then
-			pgbar = pgbar .. '|'
+			pgbar = pgbar .. "|"
 		else
-			pgbar = pgbar .. '.'
+			pgbar = pgbar .. "."
 		end
 	end
 
+	local titl = "Громкость " .. volume .. "%"
+	local progress = "[".. pgbar .. "]"
+
 	if vol_info ~= nil then
-		vol_info = naughty.notify({ title="Громкость " .. volume .. "%", text ="[".. pgbar .."]", replaces_id=vol_info.id })
+		vol_info = naughty.notify({ title = progress,
+					    text = titl,
+					    replaces_id = vol_info.id
+				    	})
 	else
-		vol_info = naughty.notify({ title="Громкость " .. volume .. "%", text ="[".. pgbar .."]" })
+		vol_info = naughty.notify({  title = progress,
+					     text = titl })
 	end
 end
