@@ -1,4 +1,3 @@
-
 local gears = require("gears")
 local awful = require("awful")
 awful.rules = require("awful.rules")
@@ -10,9 +9,6 @@ local beautiful = require("beautiful")
 -- Notification library
 local naughty = require("naughty")
 local menubar = require("menubar")
-
---require("awful.autofocus")
---require("awful.rules")
 naughty = require("naughty")
 -- Установка локализации
 os.setlocale(os.getenv("LANG"))
@@ -79,6 +75,13 @@ layouts = {
 	awful.layout.suit.max,
 	awful.layout.suit.magnifier
 }
+
+-- {{{ Wallpaper
+if beautiful.wallpaper then
+    for s = 1, screen.count() do
+        gears.wallpaper.maximized(beautiful.wallpaper, s, true)
+    end
+end
 -- {{{ Теги
 tags = {}
 for s = 1, screen.count() do
@@ -108,12 +111,13 @@ mylayoutbox = {}
 mytaglist = {}
 
 mytaglist.buttons = awful.util.table.join(
-			awful.button({ }, 1, awful.tag.viewonly),
-			awful.button({ modkey }, 1, awful.client.movetotag),
-			awful.button({ }, 3, awful.tag.viewtoggle),
-			awful.button({ modkey }, 3, awful.client.toggletag),
-			awful.button({ }, 4, awful.tag.viewnext),
-			awful.button({ }, 5, awful.tag.viewprev) )
+                    awful.button({ }, 1, awful.tag.viewonly),
+                    awful.button({ modkey }, 1, awful.client.movetotag),
+                    awful.button({ }, 3, awful.tag.viewtoggle),
+                    awful.button({ modkey }, 3, awful.client.toggletag),
+                    awful.button({ }, 4, function(t) awful.tag.viewnext(awful.tag.getscreen(t)) end),
+                    awful.button({ }, 5, function(t) awful.tag.viewprev(awful.tag.getscreen(t)) end)
+                    )
 mytasklist = {}
 
 require("widgets")
@@ -150,7 +154,6 @@ for s = 1, screen.count() do
 	right_layout:add(batwidget)
 	right_layout:add(separator)
 	right_layout:add(volicon)
-	right_layout:add(volwidget)
 	right_layout:add(volbar)
 	right_layout:add(separator)
 	right_layout:add(kbdwidget)
@@ -181,25 +184,18 @@ for s = 1, screen.count() do
 	bottom_right_layout:add(separator)
 
 	bottom_right_layout:add(memicon)
-	bottom_right_layout:add(memwidget.widget)
+	bottom_right_layout:add(memwidget)
 	bottom_right_layout:add(separator)
 
 	bottom_right_layout:add(cpuicon)
 	bottom_right_layout:add(tzswidget)
-	bottom_right_layout:add(cpu_core_1.widget)
-	bottom_right_layout:add(cpu_core_2.widget)
-	bottom_right_layout:add(cpu_core_3.widget)
-	bottom_right_layout:add(cpu_core_4.widget)
-
-	bottom_right_layout:add(cpu_graph.widget)
-
+	bottom_right_layout:add(cpu_graph)
 
 	bottom_right_layout:add(separator)
 
-
-	bottom_right_layout:add(fs_home.widget)
+	bottom_right_layout:add(fs_home)
 	bottom_right_layout:add(separator)
-	bottom_right_layout:add(fs_root.widget)
+	bottom_right_layout:add(fs_root)
 
 	local bottom_layout = wibox.layout.align.horizontal()
         bottom_layout:set_right(bottom_right_layout)
@@ -403,20 +399,79 @@ awful.rules.rules = {
 -- }}}
 -- {{{ Signals
 -- Signal function to execute when a new client appears.
-client.add_signal("manage", function (c, startup)
-	c:add_signal("mouse::enter", function(c)
-		if awful.layout.get(c.screen) ~= awful.layout.suit.magnifier
-			and awful.client.focus.filter(c) then
-		client.focus = c
-		end
-	end)
+--client.add_signal("manage", function (c, startup)
+	--c:add_signal("mouse::enter", function(c)
+		--if awful.layout.get(c.screen) ~= awful.layout.suit.magnifier
+			--and awful.client.focus.filter(c) then
+		--client.focus = c
+		--end
+	--end)
 
-	if not startup then
-		if not c.size_hints.user_position and not c.size_hints.program_position then
-			awful.placement.no_overlap(c)
-			awful.placement.no_offscreen(c)
-		end
-	end
+	--if not startup then
+		--if not c.size_hints.user_position and not c.size_hints.program_position then
+			--awful.placement.no_overlap(c)
+			--awful.placement.no_offscreen(c)
+		--end
+	--end
+--end)
+client.connect_signal("manage", function (c, startup)
+    -- Enable sloppy focus
+    c:connect_signal("mouse::enter", function(c)
+        if awful.layout.get(c.screen) ~= awful.layout.suit.magnifier
+            and awful.client.focus.filter(c) then
+            client.focus = c
+        end
+    end)
+
+    if not startup then
+        -- Set the windows at the slave,
+        -- i.e. put it at the end of others instead of setting it master.
+        -- awful.client.setslave(c)
+
+        -- Put windows in a smart way, only if they does not set an initial position.
+        if not c.size_hints.user_position and not c.size_hints.program_position then
+            awful.placement.no_overlap(c)
+            awful.placement.no_offscreen(c)
+        end
+    end
+
+    local titlebars_enabled = false
+    if titlebars_enabled and (c.type == "normal" or c.type == "dialog") then
+        -- Widgets that are aligned to the left
+        local left_layout = wibox.layout.fixed.horizontal()
+        left_layout:add(awful.titlebar.widget.iconwidget(c))
+
+        -- Widgets that are aligned to the right
+        local right_layout = wibox.layout.fixed.horizontal()
+        right_layout:add(awful.titlebar.widget.floatingbutton(c))
+        right_layout:add(awful.titlebar.widget.maximizedbutton(c))
+        right_layout:add(awful.titlebar.widget.stickybutton(c))
+        right_layout:add(awful.titlebar.widget.ontopbutton(c))
+        right_layout:add(awful.titlebar.widget.closebutton(c))
+
+        -- The title goes in the middle
+        local title = awful.titlebar.widget.titlewidget(c)
+        title:buttons(awful.util.table.join(
+                awful.button({ }, 1, function()
+                    client.focus = c
+                    c:raise()
+                    awful.mouse.client.move(c)
+                end),
+                awful.button({ }, 3, function()
+                    client.focus = c
+                    c:raise()
+                    awful.mouse.client.resize(c)
+                end)
+                ))
+
+        -- Now bring it all together
+        local layout = wibox.layout.align.horizontal()
+        layout:set_left(left_layout)
+        layout:set_right(right_layout)
+        layout:set_middle(title)
+
+        awful.titlebar(c):set_widget(layout)
+    end
 end)
 
 client.add_signal("focus", function(c) c.border_color = beautiful.border_focus end)
