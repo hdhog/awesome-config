@@ -111,6 +111,8 @@ function get_encryption(ap)
     return "WPA"
   elseif ap.wpa2 then
     return "WPA2"
+  elseif ap.encryption then
+    return "WEP"
   else
     return "N/A"
   end
