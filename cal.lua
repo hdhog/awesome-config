@@ -81,7 +81,7 @@ function register(mywidget, custom_current_day_format)
 	end
 	tooltip:add_to_object(mywidget)
 
-	mywidget:add_signal("mouse::enter", function()
+	mywidget:connect_signal("mouse::enter", function()
 		local month, year = os.date('%m'), os.date('%Y')
 		state = {month, year}
 		tooltip:set_text(string.format('<span font_desc="Terminus">%s</span>', displayMonth(month, year, 2)))
