@@ -1,7 +1,9 @@
+
+local v_contrib = require("vicious.contrib")
 local vicious = require("vicious")
 local gears = require("gears")
 require("blingbling")
-require("awesompd/awesompd")
+local awesompd = require("awesompd/awesompd")
 require("iwlist")
 require("markup")
 local naughty = require("naughty")
@@ -23,7 +25,7 @@ musicwidget.update_interval 	= 5
 musicwidget.path_to_icons 	= "/home/serg/.config/awesome/icons"
 musicwidget.jamendo_format 	= awesompd.FORMAT_MP3
 musicwidget.show_album_cover 	= true
-musicwidget.album_cover_size 	= 90
+musicwidget.album_cover_size 	= 45
 musicwidget.mpd_config 		= "/home/serg/.mpdconf"
 musicwidget.browser 		= "chromium"
 musicwidget.ldecorator 		= " "
@@ -47,7 +49,14 @@ separator:set_image(beautiful.widget_sep )
 baticon 	= wibox.widget.imagebox() --wibox.widget.imagebox()
 baticon:set_image(beautiful.widget_bat)
 batwidget 	= wibox.widget.textbox()--wibox.widget.textbox()
-vicious.register(batwidget, vicious.widgets.bat,"$2%", 120, "BAT0")
+
+--vicious.register(batwidget, vicious.widgets.bat,"$2%", 120, "BAT0")
+vicious.register(batwidget, vicious.widgets.bat,
+	function (widget,args)
+		return args[1] .. args[2] .. "%"
+	end,
+120, "BAT0")
+
 -- }}}
 
 -- {{{ Видежет отображения раскладки для работы требудется kbdd
@@ -72,11 +81,6 @@ volicon:set_image(beautiful.widget_vol)
 volwidget = wibox.widget.textbox()
 vicious.cache(vicious.widgets.volume)
 -- Регистрация виджета
-  --vicious.register(volumewidget, vicious.widgets.volume,
-    --function(widget, args)
-      --local label = { ["♫"] = "O", ["♩"] = "M" }
-      --return "Volume: " .. args[1] .. "% State: " .. label[args[2]]
-    --end, 2, "PCM")
 vicious.register(volwidget,    vicious.widgets.volume,
 	function (widget,args)
         	local label = { ["♫"] = "on", ["♩"] = "off" }
@@ -109,7 +113,7 @@ cpu_graph:set_v_margin(0)
 cpu_graph:set_show_text(false)
 cpu_graph:set_background_color("#00000044")
 cpu_graph:set_graph_line_color("#FF000000")
-vicious.register(cpu_graph, vicious.widgets.cpu,'$1',2)
+vicious.register(cpu_graph, vicious.widgets.cpu,'$1',5)
 -- }}}
 --
 -- {{{ Использование памяти
@@ -187,6 +191,9 @@ fs_root:set_horizontal(true)
 fs_root:set_v_margin(0)
 fs_root:set_label(" /root")
 vicious.register(fs_root, vicious.widgets.fs, "${/ used_p}", 120)
+
+--dio_graph = wibox.widget.textbox()
+--vicious.register(dio_graph, v_contrib.dio,'${total_mb} Mb/s',4,'sda')
 
 -- }}}
 -- {{ Wifi

@@ -192,6 +192,8 @@ for s = 1, screen.count() do
 	bottom_right_layout:add(cpu_graph)
 
 	bottom_right_layout:add(separator)
+	--bottom_right_layout:add(dio_graph)
+	bottom_right_layout:add(separator)
 
 	bottom_right_layout:add(fs_home)
 	bottom_right_layout:add(separator)

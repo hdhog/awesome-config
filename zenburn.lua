@@ -68,8 +68,9 @@ theme.tooltip_bg_color=theme.bg_normal
 -- }}}
 
 -- {{{ Menu
--- theme.menu_[bg|fg]_[normal|focus]
--- theme.menu_[height|width|border_color|border_width]
+--theme.menu_[bg|fg]_[normal|focus]
+theme.menu_border_color="#000000"
+theme.menu_border_width=1
 -- }}}
 -- }}}
 
