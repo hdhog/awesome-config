@@ -154,7 +154,7 @@ for s = 1, screen.count() do
 	right_layout:add(batwidget)
 	right_layout:add(separator)
 	right_layout:add(volicon)
-	right_layout:add(volbar)
+	right_layout:add(volwidget)
 	right_layout:add(separator)
 	right_layout:add(kbdwidget)
 	right_layout:add(separator)
@@ -300,7 +300,7 @@ clientkeys = awful.util.table.join(
 	awful.key({ modkey, "Control" }, "space",  awful.client.floating.toggle                     ),
 	awful.key({ modkey, "Control" }, "Return", function (c) c:swap(awful.client.getmaster()) end),
 	awful.key({ modkey,           }, "o",      awful.client.movetoscreen                        ),
-	awful.key({ modkey, "Shift"   }, "r",      function (c) c:redraw()                       end),
+	--awful.key({ modkey, "Shift"   }, "r",      function (c) c:redraw()                       end),
 	awful.key({ modkey,           }, "t",      function (c) c.ontop = not c.ontop            end),
 	awful.key({ modkey,           }, "n",      function (c) c.minimized = true    	     end),
 	awful.key({ modkey,           }, "m",
@@ -397,23 +397,6 @@ awful.rules.rules = {
 }
 
 -- }}}
--- {{{ Signals
--- Signal function to execute when a new client appears.
---client.add_signal("manage", function (c, startup)
-	--c:add_signal("mouse::enter", function(c)
-		--if awful.layout.get(c.screen) ~= awful.layout.suit.magnifier
-			--and awful.client.focus.filter(c) then
-		--client.focus = c
-		--end
-	--end)
-
-	--if not startup then
-		--if not c.size_hints.user_position and not c.size_hints.program_position then
-			--awful.placement.no_overlap(c)
-			--awful.placement.no_offscreen(c)
-		--end
-	--end
---end)
 client.connect_signal("manage", function (c, startup)
     -- Enable sloppy focus
     c:connect_signal("mouse::enter", function(c)

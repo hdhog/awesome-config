@@ -49,4 +49,4 @@ table.insert(menu_items, { "Завершение работы",exit_menu , freed
 table.insert(menu_items, { "VirtualBox",vbox_menu, freedesktop.utils.lookup_icon({ icon = 'virtualbox'}) })
 table.insert(menu_items, { "Terminal", terminal, freedesktop.utils.lookup_icon({icon = 'terminal'}) })
 
-mymainmenu = awful.menu.new({ items = menu_items, width = 170 })
+mymainmenu = awful.menu.new({ items = menu_items,theme={ width = 150 }})

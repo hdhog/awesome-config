@@ -18,7 +18,7 @@ local sexec  	= awful.util.spawn_with_shell
 musicwidget 			= awesompd:create()
 musicwidget.font 		= "Snap 8"
 musicwidget.scrolling 		= true
-musicwidget.output_size 	= 30
+musicwidget.output_size 	= 90
 musicwidget.update_interval 	= 5
 musicwidget.path_to_icons 	= "/home/serg/.config/awesome/icons"
 musicwidget.jamendo_format 	= awesompd.FORMAT_MP3
@@ -66,22 +66,26 @@ dbus.connect_signal("ru.gentoo.kbdd",
 	end)
 -- }}}
 -- {{{ Виджет управления громкостью
--- TODO запилить свой виджет отображения громкости.
+-- TODO запилить свой виджет отображения громкости. который будет работаеть без таймера
 volicon 	= wibox.widget.imagebox()
 volicon:set_image(beautiful.widget_vol)
-volbar = blingbling.progress_graph.new()
-volbar:set_height(12)
-volbar:set_width(30)
-volbar:set_show_text(true)
-volbar:set_text_color("#ffffffff")
-volbar:set_background_text_color("#00000000")
-volbar:set_v_margin(0)
-volbar:set_h_margin(0)
-volbar:set_horizontal(true)
--- TODO сделать обновление инфы о громкости не по таймеру.
+volwidget = wibox.widget.textbox()
 vicious.cache(vicious.widgets.volume)
 -- Регистрация виджета
-vicious.register(volbar,    vicious.widgets.volume,  "$1",  5, "Master")
+  --vicious.register(volumewidget, vicious.widgets.volume,
+    --function(widget, args)
+      --local label = { ["♫"] = "O", ["♩"] = "M" }
+      --return "Volume: " .. args[1] .. "% State: " .. label[args[2]]
+    --end, 2, "PCM")
+vicious.register(volwidget,    vicious.widgets.volume,
+	function (widget,args)
+        	local label = { ["♫"] = "on", ["♩"] = "off" }
+		if label[args[2]] == "off" then
+			return "M"
+		end
+		return args[1] .. "%"
+	end,
+5, "Master")
 -- }}}
 
 -- {{{ Виджет отображающий время и календарь
@@ -242,9 +246,9 @@ function set_volume(flag)
 	end
 	pgbar = pgbar .. "]"
 	volume = 'Volume ' .. volume .. '%'
-	
+
 	if vol_info ~= nil then
-		vol_info = naughty.notify({ 
+		vol_info = naughty.notify({
 				 	    text = pgbar,
 					    title = volume ,
 					    replaces_id = vol_info.id
