@@ -242,6 +242,7 @@ function set_volume(flag)
 	end
 	pgbar = pgbar .. "]"
 	volume = 'Volume ' .. volume .. '%'
+	
 	if vol_info ~= nil then
 		vol_info = naughty.notify({ 
 				 	    text = pgbar,
