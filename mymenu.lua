@@ -2,10 +2,12 @@ require('freedesktop.menu')
 local awful = require("awful")
 local beautiful = require("beautiful")
 
+base_menu = {}
+
 freedesktop.utils.terminal = terminal
 freedesktop.utils.icon_theme = {'nuvola','oxygen'} -- look inside /usr/share/icons/, default: nil (don't use icon theme)
 
-menu_items = freedesktop.menu.new()
+freedesktop_items = freedesktop.menu.new()
 
 shutdown_command='dbus-send --system --print-reply --dest="org.freedesktop.ConsoleKit" /org/freedesktop/ConsoleKit/Manager org.freedesktop.ConsoleKit.Manager.Stop'
 reboot_command='dbus-send --system --print-reply --dest="org.freedesktop.ConsoleKit" /org/freedesktop/ConsoleKit/Manager org.freedesktop.ConsoleKit.Manager.Restart'
@@ -20,7 +22,7 @@ myawesomemenu = {
 }
 -- TODO добавить проверку наличия бокса
 function gen_vbox_menu()
-	local f = io.popen('VBoxManage list vms |  egrep -o \"\\".*\\"\"') -- runs command
+	local f = io.popen('VBoxManage list vms |  egrep -o \"\\".*\\"\" | sed \"s/\\"//g\"') -- runs command
 	local line = ""
 	local rez = {}
 
@@ -44,9 +46,15 @@ exit_menu = {
 	{ "Гибернация" , hibernate_command, freedesktop.utils.lookup_icon({ icon = 'system-suspend-hibernate' })  }
 }
 
-table.insert(menu_items, { "Awesome", myawesomemenu, beautiful.awesome_icon })
-table.insert(menu_items, { "Завершение работы",exit_menu , freedesktop.utils.lookup_icon({ icon = 'system-shutdown' }) })
-table.insert(menu_items, { "VirtualBox",vbox_menu, freedesktop.utils.lookup_icon({ icon = 'virtualbox'}) })
-table.insert(menu_items, { "Terminal", terminal, freedesktop.utils.lookup_icon({icon = 'terminal'}) })
+testing_menu = {
+	{"Стеганография"},
+	{"Форенсик"}
+}
+table.insert(base_menu, { "FreeDesktop menu", freedesktop_items })
+table.insert(base_menu, { "Testing tools", testing_menu })
+table.insert(base_menu, { "Awesome", myawesomemenu, beautiful.awesome_icon })
+table.insert(base_menu, { "Завершение работы",exit_menu , freedesktop.utils.lookup_icon({ icon = 'system-shutdown' }) })
+table.insert(base_menu, { "VirtualBox",vbox_menu, freedesktop.utils.lookup_icon({ icon = 'virtualbox'}) })
+table.insert(base_menu, { "Terminal", terminal, freedesktop.utils.lookup_icon({icon = 'terminal'}) })
 
-mymainmenu = awful.menu.new({ items = menu_items,theme={ width = 150 }})
+mymainmenu = awful.menu.new({ items = base_menu,theme={ width = 150 }})
