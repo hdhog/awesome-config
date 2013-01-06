@@ -153,5 +153,7 @@ naughty.config.presets.normal.border_color = "#000000"
 naughty.config.presets.critical.bg = "#444444"
 naughty.config.presets.critical.fg = "#DCDCCC"
 naughty.config.presets.critical.border_color = "#FF0000"
-
+naughty.config.presets.normal.opacity      = 0.8
+naughty.config.presets.low.opacity         = 0.8
+naughty.config.presets.critical.opacity    = 0.8
 return theme

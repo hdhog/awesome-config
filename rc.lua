@@ -50,6 +50,7 @@ end
 
 -- {{{ Variable definitions
 -- Путь до файла с темой.
+-- TODO переделать на получение папки конфигов автоматом
 confdir="/home/serg/.config"
 beautiful.init(confdir .. "/awesome/zenburn.lua")
 
@@ -60,8 +61,7 @@ editor 	 	= "vim"
 editor_cmd 	= terminal .. " -e " .. editor
 awesome.font 	= "Snap 8"
 modkey 		= "Mod4"
-
-
+-- лайоты
 layouts = {
 	awful.layout.suit.floating,
 	awful.layout.suit.tile,
@@ -93,14 +93,12 @@ awful.tag.setnmaster (1, tags[1][1])
 awful.tag.setmwfact (0.85, tags[1][1])
 -- }}}
 
---{{{ Меню приложений
+--{{{ Меню
 require("mymenu")
 -- }}}
 
 -- {{{ Wibox
 -- Трей
---wibox.widget.textbox()
---wibox.widget.imagebox()
 mysystray = wibox.widget.systray()
 -- верхняя панель
 top_panel = {}
@@ -143,7 +141,7 @@ for s = 1, screen.count() do
 	left_layout:add(mypromptbox[s])
 
 	local right_layout = wibox.layout.fixed.horizontal()
-	right_layout:add(separator)
+	--right_layout:add(separator)
 	right_layout:add(wifi_icon)
 	right_layout:add(wifi_widget)
 	right_layout:add(separator)
@@ -160,7 +158,7 @@ for s = 1, screen.count() do
 	right_layout:add(separator)
 	if s == 1 then right_layout:add(mysystray) end
 	right_layout:add(datewidget)
-	right_layout:add(separator)
+	--right_layout:add(separator)
 	right_layout:add(mylayoutbox[s])
 
 	local layout = wibox.layout.align.horizontal()
@@ -192,8 +190,6 @@ for s = 1, screen.count() do
 	bottom_right_layout:add(cpu_graph)
 
 	bottom_right_layout:add(separator)
-	--bottom_right_layout:add(dio_graph)
-	bottom_right_layout:add(separator)
 
 	bottom_right_layout:add(fs_home)
 	bottom_right_layout:add(separator)
@@ -203,7 +199,6 @@ for s = 1, screen.count() do
         bottom_layout:set_right(bottom_right_layout)
 
 	bottom_panel[s]:set_widget(bottom_layout)
-
 end
 -- }}}
 -- {{{ Назначение кнопок мыши

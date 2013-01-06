@@ -42,8 +42,10 @@ musicwidget:register_buttons({
 musicwidget:run()
 --}}}
 -- {{{ Создание виджета разделителя
-separator 	= wibox.widget.imagebox()--wibox.widget.imagebox()
-separator:set_image(beautiful.widget_sep )
+--separator 	= wibox.widget.imagebox()--wibox.widget.imagebox()
+--separator:set_image(beautiful.widget_sep )
+separator = wibox.widget.textbox()
+separator:set_markup("<span color='#31ff31'font='Terminus 10'> ⁝ </span>")
 -- }}}
 -- {{{ Виджет батареи
 baticon 	= wibox.widget.imagebox() --wibox.widget.imagebox()
