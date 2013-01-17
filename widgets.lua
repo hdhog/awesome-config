@@ -64,6 +64,11 @@ vicious.register(batwidget, vicious.widgets.bat,
 -- {{{ Видежет отображения раскладки для работы требудется kbdd
 kbdwidget 		= wibox.widget.textbox()--widget({type = "textbox", name = "kbdwidget"})
 kbdwidget.border_width 	= 0
+kbdwidget.fit = function(widget, width, height)
+    local _, h = wibox.widget.textbox.fit(widget, width, height)
+    return 24, h
+end
+
 kbdwidget.border_color 	= beautiful.fg_normal
 kbdwidget:set_text( " En " )
 dbus.request_name("session", "ru.gentoo.kbdd")
@@ -87,7 +92,7 @@ vicious.register(volwidget,    vicious.widgets.volume,
 	function (widget,args)
         	local label = { ["♫"] = "on", ["♩"] = "off" }
 		if label[args[2]] == "off" then
-			return "M"
+			return "m"
 		end
 		return args[1] .. "%"
 	end,
@@ -150,7 +155,7 @@ vicious.register(hddtempwidget, vicious.widgets.hddtemp, "${/dev/sda}°C", 30)
 --}}}
 
 --{{{ Gmail уведомления о почте
-gmailicon = wibox.widget.imagebox()-- widget({type = "imagebox"})
+gmailicon = wibox.widget.imagebox()
 gmailicon:set_image(beautiful.widget_mail)
 gmail = wibox.widget.textbox()
 gmail:set_text( "?" )
