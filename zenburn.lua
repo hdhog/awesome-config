@@ -14,6 +14,7 @@ theme.confdir       = awful.util.getdir("config")
 --theme.wallpaper_cmd = { "/usr/bin/nitrogen --restore" }
 theme.wallpaper = theme.confdir .. "/gerb.jpg"
 -- }}}
+theme.icon_theme = "oxygen" -- Replace the string for the theme you want to use
 
 
 -- {{{ Styles

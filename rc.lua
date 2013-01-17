@@ -96,7 +96,13 @@ awful.tag.setmwfact (0.85, tags[1][1])
 --{{{ Меню
 require("mymenu")
 -- }}}
-
+menubar.utils.terminal = terminal -- Set the terminal for applications that require it
+menubar.cache_entries = true
+menubar.app_folders = { "/usr/share/applications/" }
+menubar.show_categories = true   -- Change to false if you want only programs to appear in the menu
+menubar.geometry = {
+   height = 24
+}
 -- {{{ Wibox
 -- Трей
 mysystray = wibox.widget.systray()
@@ -289,7 +295,9 @@ globalkeys = awful.util.table.join(
 			mypromptbox[mouse.screen].widget,
 			awful.util.eval, nil,
 			awful.util.getdir("cache") .. "/history_eval")
-		end) )
+		end),
+    awful.key({ modkey }, "p", function() menubar.show() end)
+)
 
 clientkeys = awful.util.table.join(
 	awful.key({ modkey,           }, "f",      function (c) c.fullscreen = not c.fullscreen  end),
