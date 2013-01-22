@@ -386,7 +386,11 @@ awful.rules.rules = {
 	{ rule = { class = "Chromium-browser"   }, properties = { tag = tags[1][2],floating=false 	} },
 	{ rule = { class = "Vacuum"		}, properties = { tag = tags[1][1] 			} },
 	{ rule = { class = "Dolphin" 		}, properties = { tag = tags[1][6]			} },
-	{ rule = { class = "Qtcreator"		}, properties = { tag = tags[1][3] 			} },
+	{ rule_any = { class = { 
+			"Qtcreator" ,
+			"Kdevelop" 
+		}
+	}, properties = { tag = tags[1][3] } },
 	{ rule = { class = "Kate" 		}, properties = { floating = false 			} },
 	{ rule = { class = "Krusader" 		}, properties = { tag = tags[1][6] },callback = awful.placement.centered },
 	{ rule_any = { name = {
