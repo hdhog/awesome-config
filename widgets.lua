@@ -159,20 +159,30 @@ gmailicon = wibox.widget.imagebox()
 gmailicon:set_image(beautiful.widget_mail)
 gmail = wibox.widget.textbox()
 gmail:set_text( "?" )
-timer = timer{ timeout = 30 }
-timer:connect_signal("timeout", function ()
-	local f = io.open("/tmp/gmail","rw")
-	local l = nil
-	if ( f ) then
-		l = f:read() -- read output of command
-		f:close()
-	else
-		l = "?"
-	end
-	gmail:set_markup(l)
-	os.execute("~/.config/awesome/gmail.py > /tmp/gmail &")
-end)
-timer:start()
+function mailcount()
+    local f = io.open("/tmp/gmail")
+    local l = nil
+    if f ~= nil then
+          l = f:read()
+	  f:close()
+    else
+          l = "?"
+    end
+    -- f:close()
+    os.execute("~/.config/awesome/gmail.py > /tmp/gmail &")
+    if l ~= nil then
+    	if tonumber(l) > 0 then
+        	return "<span color='red'><b>".. l .."</b></span>"
+    	end
+    else
+	    return "?"
+    end
+    return l
+end
+
+gmail.timer = timer{timeout=60}
+gmail.timer:connect_signal("timeout", function () gmail:set_markup ( mailcount() ) end)
+gmail.timer:start()
 --}}}
 
 -- {{{ Состояние файловой системы
