@@ -1,4 +1,3 @@
-
 local v_contrib = require("vicious.contrib")
 local vicious = require("vicious")
 local gears = require("gears")
@@ -42,8 +41,6 @@ musicwidget:register_buttons({
 musicwidget:run()
 --}}}
 -- {{{ Создание виджета разделителя
---separator 	= wibox.widget.imagebox()--wibox.widget.imagebox()
---separator:set_image(beautiful.widget_sep )
 separator = wibox.widget.textbox()
 separator:set_markup("<span color='#31ff31'font='Terminus 10'> ⁝ </span>")
 -- }}}
@@ -52,17 +49,15 @@ baticon 	= wibox.widget.imagebox() --wibox.widget.imagebox()
 baticon:set_image(beautiful.widget_bat)
 batwidget 	= wibox.widget.textbox()--wibox.widget.textbox()
 
---vicious.register(batwidget, vicious.widgets.bat,"$2%", 120, "BAT0")
 vicious.register(batwidget, vicious.widgets.bat,
 	function (widget,args)
-		return args[1] .. args[2] .. "%"
+		return args[2] .. "%"
 	end,
 120, "BAT0")
-
 -- }}}
 
--- {{{ Видежет отображения раскладки для работы требудется kbdd
-kbdwidget 		= wibox.widget.textbox()--widget({type = "textbox", name = "kbdwidget"})
+-- {{{ Видежет отображения раскладки, для работы требудется kbdd
+kbdwidget 		= wibox.widget.textbox()
 kbdwidget.border_width 	= 0
 kbdwidget.fit = function(widget, width, height)
     local _, h = wibox.widget.textbox.fit(widget, width, height)
@@ -70,15 +65,15 @@ kbdwidget.fit = function(widget, width, height)
 end
 
 kbdwidget.border_color 	= beautiful.fg_normal
-kbdwidget:set_text( " En " )
+kbdwidget:set_text( " En" )
 dbus.request_name("session", "ru.gentoo.kbdd")
 dbus.add_match("session", "interface='ru.gentoo.kbdd',member='layoutChanged'")
 dbus.connect_signal("ru.gentoo.kbdd",
 	function(...)
 		local data = {...}
 		local layout = data[2]
-		lts = {[0] = "En", [1] = "Ru"}
-		kbdwidget:set_text( " "..lts[layout].." ")
+		lts = {[0] = " En", [1] = " Ru"}
+		kbdwidget:set_text(lts[layout])
 	end)
 -- }}}
 -- {{{ Виджет управления громкостью
@@ -96,17 +91,16 @@ vicious.register(volwidget,    vicious.widgets.volume,
 		end
 		return args[1] .. "%"
 	end,
-5, "Master")
+10, "Master")
 -- }}}
 
 -- {{{ Виджет отображающий время и календарь
 datewidget = wibox.widget.textbox()
-
 cal.register(datewidget, markup.bg(beautiful.fg_normal,'<span color="#ff0000"><b>%s</b></span>'))
 vicious.register(datewidget, vicious.widgets.date, " %R ", 60)
 -- }}}
 
--- {{{ Загрука и температура процессора
+-- {{{ Загрузка и температура процессора
 cpuicon 	= wibox.widget.imagebox()
 cpuicon:set_image(beautiful.widget_cpu)
 tzswidget 	= wibox.widget.textbox()
@@ -145,8 +139,17 @@ dnicon:set_image(beautiful.widget_net)
 upicon:set_image(beautiful.widget_netup)
 
 network = wibox.widget.textbox()
-vicious.register(network, vicious.widgets.net, '<span color="#CC9393">${wlan0 up_kb} Kb/s</span> : <span color="#7F9F7F">${wlan0 down_kb} Kb/s</span>', 3)
+vicious.register(network, vicious.widgets.net, 
+	'<span color="#CC9393">${wlan0 up_kb} Kb/s</span> : <span color="#7F9F7F">${wlan0 down_kb} Kb/s</span>', 5)
 
+network:buttons( awful.util.table.join(
+	awful.button({}, 1,
+	function()
+			naughty.notify({text = 'test'})
+	end),
+	awful.button({ }, 3, function ()  vicious.force{wifiwidget} end)
+))
+-- }}}
 -- {{{ Температура HDD
 hddtempicon 		= wibox.widget.imagebox()
 hddtempicon:set_image(beautiful.widget_temp)
@@ -162,22 +165,16 @@ gmail:set_text( "?" )
 function mailcount()
     local f = io.open("/tmp/gmail")
     local l = nil
+    local result = "?"
     if f ~= nil then
           l = f:read()
 	  f:close()
-    else
-          l = "?"
+	  if l ~= nil then
+	      result =  "<span color='red'><b>".. l .."</b></span>"
+	  end
     end
-    -- f:close()
     os.execute("~/.config/awesome/gmail.py > /tmp/gmail &")
-    if l ~= nil and l~= "?" then
-    	if tonumber(l) > 0 then
-        	return "<span color='red'><b>".. l .."</b></span>"
-    	end
-    else
-	    return "?"
-    end
-    return l
+    return result
 end
 
 gmail.timer = timer{timeout=60}
@@ -251,6 +248,7 @@ wifi_icon:buttons( wifi_widget:buttons( awful.util.table.join(
 	end),
 	awful.button({ }, 3, function ()  vicious.force{wifiwidget} end)
 )))
+-- }}
 local vol_info = nil
 function set_volume(flag)
 
