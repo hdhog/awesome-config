@@ -279,7 +279,6 @@ clientkeys = awful.util.table.join(
 	awful.key({ modkey, "Control" }, "space",  awful.client.floating.toggle                     ),
 	awful.key({ modkey, "Control" }, "Return", function (c) c:swap(awful.client.getmaster()) end),
 	awful.key({ modkey,           }, "o",      awful.client.movetoscreen                        ),
-	--awful.key({ modkey, "Shift"   }, "r",      function (c) c:redraw()                       end),
 	awful.key({ modkey,           }, "t",      function (c) c.ontop = not c.ontop            end),
 	awful.key({ modkey,           }, "n",      function (c) c.minimized = true    	     end),
 	awful.key({ modkey,           }, "m",
@@ -367,6 +366,7 @@ awful.rules.rules = {
 	}, properties = { tag = tags[1][3] } },
 	{ rule = { class = "Kate" 		}, properties = { floating = false 			} },
 	{ rule = { class = "Krusader" 		}, properties = { tag = tags[1][6] },callback = awful.placement.centered },
+	-- добавить маску
 	{ rule_any = { name = {
 				"Перемещение",
 				"Удаление",
