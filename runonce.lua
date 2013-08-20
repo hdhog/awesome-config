@@ -1,4 +1,6 @@
 local awful = require("awful")
+exec   	= awful.util.spawn
+sexec  	= awful.util.spawn_with_shell
 function run_once(prg, args)
 	if not prg then
 		do return nil end
