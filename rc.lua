@@ -10,6 +10,7 @@ local beautiful = require("beautiful")
 local naughty = require("naughty")
 local menubar = require("menubar")
 naughty = require("naughty")
+require("runonce")
 -- Установка локализации
 os.setlocale(os.getenv("LANG"))
 
@@ -37,17 +38,6 @@ do
 end
 
 -- }}}
--- Функция для запуска внешних приложений
-function run_once(prg, args)
-	if not prg then
-		do return nil end
-	end
-	if not args then
-		args=""
-	end
-	awful.util.spawn_with_shell('pgrep -f -u $USER -x ' .. prg .. ' || (' .. prg .. ' ' .. args ..')')
-end
-
 -- {{{ Variable definitions
 -- Путь до файла с темой.
 -- TODO переделать на получение папки конфигов автоматом
@@ -386,9 +376,9 @@ awful.rules.rules = {
 	{ rule = { class = "Chromium-browser"   }, properties = { tag = tags[1][2],floating=false 	} },
 	{ rule = { class = "Vacuum"		}, properties = { tag = tags[1][1] 			} },
 	{ rule = { class = "Dolphin" 		}, properties = { tag = tags[1][6]			} },
-	{ rule_any = { class = { 
+	{ rule_any = { class = {
 			"Qtcreator" ,
-			"Kdevelop" 
+			"Kdevelop"
 		}
 	}, properties = { tag = tags[1][3] } },
 	{ rule = { class = "Kate" 		}, properties = { floating = false 			} },
