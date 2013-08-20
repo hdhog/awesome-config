@@ -170,7 +170,7 @@ function mailcount()
     end
     -- f:close()
     os.execute("~/.config/awesome/gmail.py > /tmp/gmail &")
-    if l ~= nil then
+    if l ~= nil and l~= "?" then
     	if tonumber(l) > 0 then
         	return "<span color='red'><b>".. l .."</b></span>"
     	end
@@ -221,10 +221,16 @@ wifi_widget = wibox.widget.textbox()
 vicious.register(wifi_widget, vicious.widgets.wifi,
 	function(widget, args)
 		local quality = 0
-		if args["{linp}"] > 0 then
-			quality = args["{link}"] / args["{linp}"] * 100
+		local result = ""
+		if args["{powr}"] ~= 'off' then
+			if args["{linp}"] > 0 then
+				quality = args["{link}"] / args["{linp}"] * 100
+			end
+			result =  ("%s: %.1f%%"):format(args["{powr}"], quality)
+		else
+			result =  "off"
 		end
-		return ("%s: %.1f%%"):format(args["{ssid}"], quality)
+		return result
 	end,
 7, "wlan0")
 
