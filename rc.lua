@@ -2,11 +2,8 @@ local gears = require("gears")
 local awful = require("awful")
 awful.rules = require("awful.rules")
 require("awful.autofocus")
--- Widget and layout library
 local wibox = require("wibox")
--- Theme handling library
 local beautiful = require("beautiful")
--- Notification library
 local naughty = require("naughty")
 local menubar = require("menubar")
 naughty = require("naughty")
@@ -44,8 +41,6 @@ end
 confdir="/home/serg/.config"
 beautiful.init(confdir .. "/awesome/zenburn.lua")
 
-local exec   	= awful.util.spawn
-local sexec  	= awful.util.spawn_with_shell
 terminal	= "urxvt -tr"
 editor 	 	= "vim"
 editor_cmd 	= terminal .. " -e " .. editor
