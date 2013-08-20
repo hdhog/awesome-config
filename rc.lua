@@ -5,7 +5,6 @@ require("awful.autofocus")
 local wibox = require("wibox")
 local beautiful = require("beautiful")
 local naughty = require("naughty")
-local menubar = require("menubar")
 naughty = require("naughty")
 require("runonce")
 -- Установка локализации
@@ -81,13 +80,6 @@ awful.tag.setmwfact (0.85, tags[1][1])
 --{{{ Меню
 require("mymenu")
 -- }}}
-menubar.utils.terminal = terminal -- Set the terminal for applications that require it
-menubar.cache_entries = true
-menubar.app_folders = { "/usr/share/applications/" }
-menubar.show_categories = true   -- Change to false if you want only programs to appear in the menu
-menubar.geometry = {
-   height = 24
-}
 -- {{{ Wibox
 -- Трей
 mysystray = wibox.widget.systray()
@@ -200,7 +192,7 @@ root.buttons(
 		awful.button({ }, 5, awful.tag.viewprev) ) )
 -- }}}
 
--- {{{ Назаначние кноком клавиатуры
+-- {{{ Назначение кнопкам клавиатуры
 globalkeys = awful.util.table.join(
 	-- {{ Перемещение по тегам
 	awful.key({ modkey,           }, "Left",   awful.tag.viewprev       ),
@@ -216,12 +208,10 @@ globalkeys = awful.util.table.join(
 	-- }}
 	-- {{Управление громкостью
 	awful.key({ }, "XF86AudioRaiseVolume", function ()
-			-- exec("amixer set Master 2%+")
 			set_volume(true)
 	end),
 	awful.key({ }, "XF86AudioLowerVolume", function ()
-		--exec("amixer set Master 2%-")
-		set_volume(false)
+			set_volume(false)
 	end),
 	awful.key({ }, "XF86AudioMute", function () exec("amixer sset Master toggle") end),
 	-- }}
@@ -280,8 +270,7 @@ globalkeys = awful.util.table.join(
 			mypromptbox[mouse.screen].widget,
 			awful.util.eval, nil,
 			awful.util.getdir("cache") .. "/history_eval")
-		end),
-    awful.key({ modkey }, "p", function() menubar.show() end)
+		end)
 )
 
 clientkeys = awful.util.table.join(
