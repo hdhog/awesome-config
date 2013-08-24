@@ -139,7 +139,7 @@ dnicon:set_image(beautiful.widget_net)
 upicon:set_image(beautiful.widget_netup)
 
 network = wibox.widget.textbox()
-vicious.register(network, vicious.widgets.net, 
+vicious.register(network, vicious.widgets.net,
 	'<span color="#CC9393">${wlan0 up_kb} Kb/s</span> : <span color="#7F9F7F">${wlan0 down_kb} Kb/s</span>', 5)
 
 network:buttons( awful.util.table.join(
@@ -215,13 +215,13 @@ vicious.register(wifi_widget, vicious.widgets.wifi,
 	function(widget, args)
 		local quality = 0
 		local result = ""
-		if args["{powr}"] ~= 'off' then
+		if args["{ssid}"] ~= 'N/A' then
 			if args["{linp}"] > 0 then
 				quality = args["{link}"] / args["{linp}"] * 100
 			end
-			result =  ("%s: %.1f%%"):format(args["{powr}"], quality)
+			result =  ("%s: %.1f%%"):format(args["{ssid}"], quality)
 		else
-			result =  "off"
+			result =  "n/a"
 		end
 		return result
 	end,
