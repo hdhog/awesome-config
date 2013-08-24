@@ -45,9 +45,9 @@ separator = wibox.widget.textbox()
 separator:set_markup("<span color='#31ff31'font='Terminus 10'> ⁝ </span>")
 -- }}}
 -- {{{ Виджет батареи
-baticon 	= wibox.widget.imagebox() --wibox.widget.imagebox()
+baticon 	= wibox.widget.imagebox()
 baticon:set_image(beautiful.widget_bat)
-batwidget 	= wibox.widget.textbox()--wibox.widget.textbox()
+batwidget 	= wibox.widget.textbox()
 
 vicious.register(batwidget, vicious.widgets.bat,
 	function (widget,args)
@@ -205,10 +205,6 @@ fs_root:set_horizontal(true)
 fs_root:set_v_margin(0)
 fs_root:set_label(" /root")
 vicious.register(fs_root, vicious.widgets.fs, "${/ used_p}", 120)
-
---dio_graph = wibox.widget.textbox()
---vicious.register(dio_graph, v_contrib.dio,'${total_mb} Mb/s',4,'sda')
-
 -- }}}
 -- {{ Wifi
 wifi_icon = wibox.widget.imagebox()
