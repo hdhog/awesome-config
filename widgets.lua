@@ -2,6 +2,8 @@ local v_contrib = require("vicious.contrib")
 local vicious = require("vicious")
 local gears = require("gears")
 require("blingbling")
+line_graph = require("blingbling.linegraph")
+progress_graph= require("blingbling.progress_graph")
 local awesompd = require("awesompd/awesompd")
 require("iwlist")
 require("markup")
@@ -11,6 +13,7 @@ require("awesompd/awesompd")
 local awful = require("awful")
 local wibox = require("wibox")
 local beautiful = require("beautiful")
+local asyncshell = require("asyncshell")
 awful.util = require("awful.util")
 local exec   	= awful.util.spawn
 local sexec  	= awful.util.spawn_with_shell
@@ -106,28 +109,30 @@ cpuicon:set_image(beautiful.widget_cpu)
 tzswidget 	= wibox.widget.textbox()
 vicious.register(tzswidget, vicious.widgets.thermal, "$1°C", 19, "thermal_zone0")
 
-cpu_graph = blingbling.line_graph.new()
-cpu_graph:set_width(100)
-cpu_graph:set_height(12)
-cpu_graph:set_h_margin(0)
-cpu_graph:set_v_margin(0)
-cpu_graph:set_show_text(false)
-cpu_graph:set_background_color("#00000044")
-cpu_graph:set_graph_line_color("#FF000000")
+cpu_graph = line_graph({
+			height = 12,
+			width = 100,
+			show_text = false,
+			background_color = "#00000044",
+			h_margin = 0,
+			v_margin = 0,
+			graph_line_color="#FF000000"
+		      })
 vicious.register(cpu_graph, vicious.widgets.cpu,'$1',5)
 -- }}}
 --
 -- {{{ Использование памяти
 memicon 	= wibox.widget.imagebox()
 memicon:set_image(beautiful.widget_mem)
-memwidget 	= blingbling.line_graph.new()
-memwidget:set_height(12)
-memwidget:set_width(100)
-memwidget:set_v_margin(0)
-memwidget:set_h_margin(0)
-memwidget:set_graph_line_color("#FF000000")
-memwidget:set_show_text(false)
-memwidget:set_background_color("#00000044")
+memwidget = line_graph({
+		height = 12,
+		width = 100,
+		v_margin = 0,
+		h_margin = 0,
+		graph_line_color = "#FF000000",
+		show_text = false,
+		background_color = "#00000044"
+})
 vicious.register(memwidget, vicious.widgets.mem, '$1', 5)
 -- }}}
 -- {{{ Загрука сети
@@ -162,48 +167,54 @@ gmailicon = wibox.widget.imagebox()
 gmailicon:set_image(beautiful.widget_mail)
 gmail = wibox.widget.textbox()
 gmail:set_text( "?" )
-function mailcount()
-    local f = io.open("/tmp/gmail")
-    local l = nil
-    local result = "?"
-    if f ~= nil then
-          l = f:read()
-	  f:close()
-	  if l ~= nil then
-	      result =  "<span color='red'><b>".. l .."</b></span>"
-	  end
-    end
-    os.execute("~/.config/awesome/gmail.py > /tmp/gmail &")
-    return result
+
+local function gmail_callback(f)
+	text = f:read()
+	if text ~= 0 and text ~= "?" then
+		gmail:set_markup( "<span color='red'><b>".. text .."</b></span>")
+	else
+		gmail:set_text(text)
+	end
 end
 
 gmail.timer = timer{timeout=60}
-gmail.timer:connect_signal("timeout", function () gmail:set_markup ( mailcount() ) end)
+gmail.timer:connect_signal("timeout", function ()
+	asyncshell.request('/home/serg/.config/awesome/gmail.py', function(f) gmail_callback(f) end)
+end)
 gmail.timer:start()
 --}}}
 
 -- {{{ Состояние файловой системы
-fs_home = blingbling.progress_graph.new()
-fs_home:set_height(12)
-fs_home:set_width(65)
-fs_home:set_show_text(true)
-fs_home:set_text_color("#ffffffff")
-fs_home:set_background_text_color("#00000000")
-fs_home:set_v_margin(0)
-fs_home:set_h_margin(0)
-fs_home:set_horizontal(true)
-fs_home:set_label(" /home")
+fs_home = progress_graph({
+	height=12,
+	graph_line_color = "#00000000",
+	width=65,
+	show_text=true,
+	text_color="#ffffffff",
+	background_text_color="#00000000",
+	v_margin=0,
+	h_margin=0,
+	horizontal=true,
+	label=" /home",
+	font = "Snap",
+	font_size=10
+
+})
 vicious.register(fs_home, vicious.widgets.fs, "${/home used_p}", 120)
 --
-fs_root = blingbling.progress_graph.new()
-fs_root:set_height(12)
-fs_root:set_width(65)
-fs_root:set_show_text(true)
-fs_root:set_text_color("#ffffffff")
-fs_root:set_background_text_color("#00000000")
-fs_root:set_horizontal(true)
-fs_root:set_v_margin(0)
-fs_root:set_label(" /root")
+fs_root = progress_graph({
+	height=12,
+	width=65,
+	show_text=true,
+	graph_line_color = "#00000000",
+	text_color="#ffffffff",
+	background_text_color="#00000000",
+	horizontal=true,
+	v_margin=0,
+	label=" /root",
+	font = "Snap",
+	font_size= 10
+})
 vicious.register(fs_root, vicious.widgets.fs, "${/ used_p}", 120)
 -- }}}
 -- {{ Wifi
