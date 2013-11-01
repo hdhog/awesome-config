@@ -69,7 +69,7 @@ end
 -- {{{ Теги
 tags = {}
 for s = 1, screen.count() do
-	tags[s] = awful.tag({ "1:im", "2:web", "3:dev", "4:doc", "5:term", "6:fm", 7, 8, "9:video" }, s, layouts[2])
+	tags[s] = awful.tag({ "1:im", "2:web", "3:dev", "4:doc", "5:term", "6:fm", 7, "8:vm", "9:video" }, s, layouts[2])
 end
 
 awful.tag.setncol(2, tags[1][1])
@@ -100,7 +100,39 @@ mytaglist.buttons = awful.util.table.join(
                     awful.button({ }, 5, function(t) awful.tag.viewprev(awful.tag.getscreen(t)) end)
                     )
 mytasklist = {}
-
+mytasklist.buttons = awful.util.table.join(
+                     awful.button({ }, 1, function (c)
+                                              if c == client.focus then
+                                                  c.minimized = true
+                                              else
+                                                  -- Without this, the following
+                                                  -- :isvisible() makes no sense
+                                                  c.minimized = false
+                                                  if not c:isvisible() then
+                                                      awful.tag.viewonly(c:tags()[1])
+                                                  end
+                                                  -- This will also un-minimize
+                                                  -- the client, if needed
+                                                  client.focus = c
+                                                  c:raise()
+                                              end
+                                          end),
+                     awful.button({ }, 3, function ()
+                                              if instance then
+                                                  instance:hide()
+                                                  instance = nil
+                                              else
+                                                  instance = awful.menu.clients({ width=250 })
+                                              end
+                                          end),
+                     awful.button({ }, 4, function ()
+                                              awful.client.focus.byidx(1)
+                                              if client.focus then client.focus:raise() end
+                                          end),
+                     awful.button({ }, 5, function ()
+                                              awful.client.focus.byidx(-1)
+                                              if client.focus then client.focus:raise() end
+                                          end))
 require("widgets")
 -- {{{
 for s = 1, screen.count() do
@@ -118,9 +150,10 @@ for s = 1, screen.count() do
 	-- Создание панелей
 	top_panel[s] 	= awful.wibox({ position = "top",    screen = s , height=12})
 	bottom_panel[s] = awful.wibox({ position = "bottom", screen = s , height=12})
-
+	mytasklist[s] = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, mytasklist.buttons)
 	local left_layout = wibox.layout.fixed.horizontal()
 	left_layout:add(mytaglist[s])
+	
 	left_layout:add(mypromptbox[s])
 
 	local right_layout = wibox.layout.fixed.horizontal()
@@ -146,7 +179,8 @@ for s = 1, screen.count() do
 
 	local layout = wibox.layout.align.horizontal()
 	layout:set_left(left_layout)
-        layout:set_right(right_layout)
+	layout:set_middle(mytasklist[s])
+    layout:set_right(right_layout)
 
  	top_panel[s]:set_widget(layout)
 
