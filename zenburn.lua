@@ -29,7 +29,7 @@ theme.bg_normal = "#3F3F3F"
 theme.bg_focus  = "#1E2320"
 theme.bg_urgent = theme.bg_normal
 -- }}}
-
+theme.tasklist_disable_icon = true
 -- {{{ Borders
 theme.border_width  = 1
 theme.border_focus  = "#6F6F6F"
