@@ -29,7 +29,7 @@ function gen_vbox_menu()
 	while line ~= nil do
 		line = f:read("*l")
 		if line ~= nil then
-			table.insert(rez,{line,"VBoxManage startvm " .. line })
+			table.insert(rez,{line,"VBoxManage startvm " .. line ,'/home/serg/.config/awesome/tools/os/Debian.png'})
 		end
 	end
 
