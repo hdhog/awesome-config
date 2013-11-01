@@ -170,14 +170,14 @@ gmail:set_text( "?" )
 
 local function gmail_callback(f)
 	text = f:read()
-	if text ~= 0 and text ~= "?" then
+	if text ~= "0" and text ~= "?" then
 		gmail:set_markup( "<span color='red'><b>".. text .."</b></span>")
 	else
 		gmail:set_text(text)
 	end
 end
 
-gmail.timer = timer{timeout=60}
+gmail.timer = timer{timeout=120}
 gmail.timer:connect_signal("timeout", function ()
 	asyncshell.request('/home/serg/.config/awesome/gmail.py', function(f) gmail_callback(f) end)
 end)
