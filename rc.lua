@@ -7,8 +7,10 @@ local beautiful = require("beautiful")
 local naughty = require("naughty")
 naughty = require("naughty")
 require("runonce")
+
 -- Установка локализации
 os.setlocale(os.getenv("LANG"))
+
 
 -- {{{ Обработка ошибок
 if awesome.startup_errors then
@@ -38,9 +40,11 @@ end
 -- Путь до файла с темой.
 -- TODO переделать на получение папки конфигов автоматом
 confdir="/home/serg/.config"
-beautiful.init(confdir .. "/awesome/zenburn.lua")
+--beautiful.init(confdir .. "/awesome/zenburn.lua")
+beautiful.init(os.getenv("HOME") .. "/.config/awesome/themes/powerarrow-darker/theme.lua")
 
 terminal	= "urxvt -tr"
+--terminal 	= "xterm"
 editor 	 	= "vim"
 editor_cmd 	= terminal .. " -e " .. editor
 awesome.font 	= "Snap 8"
@@ -153,27 +157,36 @@ for s = 1, screen.count() do
 	mytasklist[s] = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, mytasklist.buttons)
 	local left_layout = wibox.layout.fixed.horizontal()
 	left_layout:add(mytaglist[s])
-	
+
 	left_layout:add(mypromptbox[s])
 
 	local right_layout = wibox.layout.fixed.horizontal()
 	--right_layout:add(separator)
-	right_layout:add(wifi_icon)
-	right_layout:add(wifi_widget)
-	right_layout:add(separator)
+	right_layout:add(spr)
+    right_layout:add(arrl)
+    right_layout:add(arrl_ld)
+	right_layout:add(wifi_iconbg)
+	right_layout:add(wifi_widgetbg)
+	--right_layout:add(separator)
+	right_layout:add(arrl_dl)
 	right_layout:add(gmailicon)
 	right_layout:add(gmail)
-	right_layout:add(separator)
-	right_layout:add(baticon)
-	right_layout:add(batwidget)
-	right_layout:add(separator)
+	--right_layout:add(separator)
+	right_layout:add(arrl_ld)
+	right_layout:add(baticonbg)
+	right_layout:add(batwidgetbg)
+	--right_layout:add(separator)
+    right_layout:add(arrl_dl)
 	right_layout:add(volicon)
 	right_layout:add(volwidget)
-	right_layout:add(separator)
-	right_layout:add(kbdwidget)
-	right_layout:add(separator)
+	--right_layout:add(separator)
+	right_layout:add(arrl_ld)
+	right_layout:add(kbdwidgetbg)
+	--right_layout:add(separator)
+	right_layout:add(arrl_dl)
 	if s == 1 then right_layout:add(mysystray) end
-	right_layout:add(datewidget)
+	right_layout:add(arrl_ld)
+	right_layout:add(datewidgetbg)
 	--right_layout:add(separator)
 	right_layout:add(mylayoutbox[s])
 
@@ -185,31 +198,27 @@ for s = 1, screen.count() do
  	top_panel[s]:set_widget(layout)
 
 	local bottom_right_layout = wibox.layout.fixed.horizontal()
-
-	bottom_right_layout:add(musicwidget.widget)
-	bottom_right_layout:add(separator)
-
+	bottom_right_layout:add(spr)
+	bottom_right_layout:add(arrl)
 	bottom_right_layout:add(dnicon)
 	bottom_right_layout:add(network)
 	bottom_right_layout:add(upicon)
-	bottom_right_layout:add(separator)
-
-	bottom_right_layout:add(hddtempicon)
-	bottom_right_layout:add(hddtempwidget)
-	bottom_right_layout:add(separator)
-
+	bottom_right_layout:add(arrl_dl)
 	bottom_right_layout:add(memicon)
 	bottom_right_layout:add(memwidget)
-	bottom_right_layout:add(separator)
+--	bottom_right_layout:add(separator)
+	bottom_right_layout:add(arrl_ld)
 
-	bottom_right_layout:add(cpuicon)
-	bottom_right_layout:add(tzswidget)
+	bottom_right_layout:add(cpuiconbg)
+	bottom_right_layout:add(tzswidgetbg)
 	bottom_right_layout:add(cpu_graph)
 
-	bottom_right_layout:add(separator)
+	--bottom_right_layout:add(separator)
+	bottom_right_layout:add(arrl_dl)
 
 	bottom_right_layout:add(fs_home)
-	bottom_right_layout:add(separator)
+--	bottom_right_layout:add(separator)
+	bottom_right_layout:add(arrl_ld)
 	bottom_right_layout:add(fs_root)
 
 	local bottom_layout = wibox.layout.align.horizontal()
@@ -234,12 +243,6 @@ globalkeys = awful.util.table.join(
 	awful.key({ modkey,           }, "Escape", awful.tag.history.restore),
 	-- Блокировка экрана
 	awful.key({ modkey, "Control" }, "l", function () exec("slimlock") end),
-	-- {{ Медиа кнопки управления плеером
-	awful.key({ }, "XF86AudioNext",  musicwidget:command_next_track()),
-	awful.key({ }, "XF86AudioPrev",  musicwidget:command_prev_track()),
-	awful.key({ }, "XF86AudioStop",  musicwidget:command_stop()),
-	awful.key({ }, "XF86AudioPlay",  musicwidget:command_playpause()),
-	-- }}
 	-- {{Управление громкостью
 	awful.key({ }, "XF86AudioRaiseVolume", function ()
 			set_volume(true)
@@ -386,20 +389,17 @@ awful.rules.rules = {
 			"Keepassx",
 			"Deadbeef",
 			"Znotes",
-			"Exe"
-			}
-		}, properties = { floating=true }},
+			"Exe" } }, properties = { floating=true }},
 	{ rule = { class = "Gimp" 	  	}, properties = { floating = false 			} },
 	{ rule = { class = "Chromium-browser"   }, properties = { tag = tags[1][2],floating=false 	} },
 	{ rule = { class = "Vacuum"		}, properties = { tag = tags[1][1] 			} },
 	{ rule = { class = "Dolphin" 		}, properties = { tag = tags[1][6]			} },
 	{ rule_any = { class = {
 			"Qtcreator" ,
-			"Kdevelop"
-		}
-	}, properties = { tag = tags[1][3] } },
+			"Kdevelop" } }, properties = { tag = tags[1][3] } },
 	{ rule = { class = "Kate" 		}, properties = { floating = false 			} },
 	{ rule = { class = "Krusader" 		}, properties = { tag = tags[1][6] },callback = awful.placement.centered },
+	{ rule_any = { class = {"Virt-manager", "VirtualBox" } }, properties = { tag = tags[1][8] } },
 	-- добавить маску
 	{ rule_any = { name = {
 				"Перемещение",
@@ -407,10 +407,12 @@ awful.rules.rules = {
 				"Процесс выполнения",
 				"Копирование",
 				"Распаковка файла*",
-				"Проверка архива"
+				"Проверка архива",
+				"Профиль*",
+				"Профиль"
 				}
 			},
-		properties = { tag = tags[1][6],floating=true },callback = awful.placement.centered }
+		properties = {floating=true },callback = awful.placement.centered }
 }
 
 -- }}}

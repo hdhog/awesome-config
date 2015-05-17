@@ -31,7 +31,7 @@ theme.bg_urgent = theme.bg_normal
 -- }}}
 theme.tasklist_disable_icon = true
 -- {{{ Borders
-theme.border_width  = 1
+theme.border_width  = 0
 theme.border_focus  = "#6F6F6F"
 theme.border_normal = theme.bg_normal
 theme.border_marked = theme.fg_urgent

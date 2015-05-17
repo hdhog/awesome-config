@@ -36,7 +36,7 @@ function gen_vbox_menu()
 	return rez
 end
 
-vbox_menu = gen_vbox_menu()
+--vbox_menu = gen_vbox_menu()
 
 exit_menu = {
 	{ "Блокировать экран", screen_lock_command, freedesktop.utils.lookup_icon({ icon = 'system-lock-screen' })  },
@@ -54,7 +54,7 @@ table.insert(base_menu, { "FreeDesktop menu", freedesktop_items })
 table.insert(base_menu, { "Testing tools", testing_menu })
 table.insert(base_menu, { "Awesome", myawesomemenu, beautiful.awesome_icon })
 table.insert(base_menu, { "Завершение работы",exit_menu , freedesktop.utils.lookup_icon({ icon = 'system-shutdown' }) })
-table.insert(base_menu, { "VirtualBox",vbox_menu, freedesktop.utils.lookup_icon({ icon = 'virtualbox'}) })
+--table.insert(base_menu, { "VirtualBox",vbox_menu, freedesktop.utils.lookup_icon({ icon = 'virtualbox'}) })
 table.insert(base_menu, { "Terminal", terminal, freedesktop.utils.lookup_icon({icon = 'terminal'}) })
 
 mymainmenu = awful.menu.new({ items = base_menu,theme={ width = 150 }})

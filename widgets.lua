@@ -4,52 +4,39 @@ local gears = require("gears")
 require("blingbling")
 line_graph = require("blingbling.linegraph")
 progress_graph= require("blingbling.progress_graph")
-local awesompd = require("awesompd/awesompd")
 require("iwlist")
 require("markup")
 local naughty = require("naughty")
 local cal = require("cal")
-require("awesompd/awesompd")
 local awful = require("awful")
 local wibox = require("wibox")
 local beautiful = require("beautiful")
 local asyncshell = require("asyncshell")
 awful.util = require("awful.util")
+local lain      = require("lain")
+markup = lain.util.markup
+white  = beautiful.fg_focus
+gray   = beautiful.fg_normal
 local exec   	= awful.util.spawn
 local sexec  	= awful.util.spawn_with_shell
 
---{{{ MPD виджет
-musicwidget 			= awesompd:create()
-musicwidget.font 		= "Snap 8"
-musicwidget.scrolling 		= true
-musicwidget.output_size 	= 90
-musicwidget.update_interval 	= 5
-musicwidget.path_to_icons 	= "/home/serg/.config/awesome/icons"
-musicwidget.jamendo_format 	= awesompd.FORMAT_MP3
-musicwidget.show_album_cover 	= true
-musicwidget.album_cover_size 	= 45
-musicwidget.mpd_config 		= "/home/serg/.mpdconf"
-musicwidget.browser 		= "chromium"
-musicwidget.ldecorator 		= " "
-musicwidget.rdecorator 		= " "
-musicwidget.servers 		= { { server = "localhost", port = 6600 } }
-musicwidget:register_buttons({
-				{ "", awesompd.MOUSE_LEFT, musicwidget:command_toggle() },
-				{ "Control", awesompd.MOUSE_SCROLL_UP, musicwidget:command_prev_track() },
-				{ "Control", awesompd.MOUSE_SCROLL_DOWN, musicwidget:command_next_track() },
-				{ "", awesompd.MOUSE_SCROLL_UP, musicwidget:command_volume_up() },
-				{ "", awesompd.MOUSE_SCROLL_DOWN, musicwidget:command_volume_down() },
-				{ "", awesompd.MOUSE_RIGHT, musicwidget:command_show_menu() }
-			})
-musicwidget:run()
---}}}
+--{{
+spr = wibox.widget.textbox(' ')
+arrl = wibox.widget.imagebox()
+arrl:set_image(beautiful.arrl)
+arrl_dl = wibox.widget.imagebox()
+arrl_dl:set_image(beautiful.arrl_dl)
+arrl_ld = wibox.widget.imagebox()
+arrl_ld:set_image(beautiful.arrl_ld)
+--}}
+
 -- {{{ Создание виджета разделителя
 separator = wibox.widget.textbox()
 separator:set_markup("<span color='#31ff31'font='Terminus 10'> ⁝ </span>")
 -- }}}
 -- {{{ Виджет батареи
 baticon 	= wibox.widget.imagebox()
-baticon:set_image(beautiful.widget_bat)
+baticon:set_image(beautiful.widget_battery)
 batwidget 	= wibox.widget.textbox()
 
 vicious.register(batwidget, vicious.widgets.bat,
@@ -57,6 +44,8 @@ vicious.register(batwidget, vicious.widgets.bat,
 		return args[2] .. "%"
 	end,
 120, "BAT0")
+baticonbg = wibox.widget.background(baticon, "#313131")
+batwidgetbg = wibox.widget.background(batwidget, "#313131")
 -- }}}
 
 -- {{{ Видежет отображения раскладки, для работы требудется kbdd
@@ -78,6 +67,7 @@ dbus.connect_signal("ru.gentoo.kbdd",
 		lts = {[0] = " En", [1] = " Ru"}
 		kbdwidget:set_text(lts[layout])
 	end)
+kbdwidgetbg = wibox.widget.background(kbdwidget, "#313131")
 -- }}}
 -- {{{ Виджет управления громкостью
 -- TODO запилить свой виджет отображения громкости. который будет работаеть без таймера
@@ -99,8 +89,9 @@ vicious.register(volwidget,    vicious.widgets.volume,
 
 -- {{{ Виджет отображающий время и календарь
 datewidget = wibox.widget.textbox()
-cal.register(datewidget, markup.bg(beautiful.fg_normal,'<span color="#ff0000"><b>%s</b></span>'))
+lain.widgets.calendar:attach(datewidget, { font_size = 10 })
 vicious.register(datewidget, vicious.widgets.date, " %R ", 60)
+datewidgetbg = wibox.widget.background(datewidget, "#313131")
 -- }}}
 
 -- {{{ Загрузка и температура процессора
@@ -108,17 +99,19 @@ cpuicon 	= wibox.widget.imagebox()
 cpuicon:set_image(beautiful.widget_cpu)
 tzswidget 	= wibox.widget.textbox()
 vicious.register(tzswidget, vicious.widgets.thermal, "$1°C", 19, "thermal_zone0")
-
+cpuiconbg = wibox.widget.background(cpuicon, "#313131")
+tzswidgetbg = wibox.widget.background(tzswidget, "#313131")
 cpu_graph = line_graph({
 			height = 12,
 			width = 100,
 			show_text = false,
-			background_color = "#00000044",
+			background_color = "#313131",
 			h_margin = 0,
 			v_margin = 0,
 			graph_line_color="#FF000000"
 		      })
 vicious.register(cpu_graph, vicious.widgets.cpu,'$1',5)
+
 -- }}}
 --
 -- {{{ Использование памяти
@@ -156,12 +149,13 @@ network:buttons( awful.util.table.join(
 ))
 -- }}}
 -- {{{ Температура HDD
-hddtempicon 		= wibox.widget.imagebox()
-hddtempicon:set_image(beautiful.widget_temp)
-hddtempwidget 		= wibox.widget.textbox()
-vicious.register(hddtempwidget, vicious.widgets.hddtemp, "${/dev/sda}°C", 30)
+--hddtempicon 		= wibox.widget.imagebox()
+--hddtempicon:set_image(beautiful.widget_temp)
+--hddtempwidget 		= wibox.widget.textbox()
+--vicious.register(hddtempwidget, vicious.widgets.hddtemp, "${/dev/sda}°C", 30)
 --}}}
-
+--hddtempiconbg = wibox.widget.background(hddtempicon, "#313131")
+--hddtempwidgetbg = wibox.widget.background(hddtempwidget, "#313131")
 --{{{ Gmail уведомления о почте
 gmailicon = wibox.widget.imagebox()
 gmailicon:set_image(beautiful.widget_mail)
@@ -170,10 +164,14 @@ gmail:set_text( "?" )
 
 local function gmail_callback(f)
 	text = f:read()
-	if text ~= "0" and text ~= "?" then
-		gmail:set_markup( "<span color='red'><b>".. text .."</b></span>")
+	if text ~= nil then
+		if text ~= "0" and text ~= "?" then
+			gmail:set_markup( "<span color='red'><b>".. text .."</b></span>")
+		else
+			gmail:set_text(text)
+		end
 	else
-		gmail:set_text(text)
+		gmail:set_text('N')
 	end
 end
 
@@ -192,8 +190,9 @@ fs_home = progress_graph({
 	show_text=true,
 	text_color="#ffffffff",
 	background_text_color="#00000000",
+	graph_background_color = "#1A1A1A",
 	v_margin=0,
-	h_margin=0,
+	h_margin=2,
 	horizontal=true,
 	label=" /home",
 	font = "Snap",
@@ -209,6 +208,9 @@ fs_root = progress_graph({
 	graph_line_color = "#00000000",
 	text_color="#ffffffff",
 	background_text_color="#00000000",
+	background_color = "#313131",
+	background_border = "#000000",
+	graph_background_color = "#313131",
 	horizontal=true,
 	v_margin=0,
 	label=" /root",
@@ -216,12 +218,14 @@ fs_root = progress_graph({
 	font_size= 10
 })
 vicious.register(fs_root, vicious.widgets.fs, "${/ used_p}", 120)
+
 -- }}}
 -- {{ Wifi
 wifi_icon = wibox.widget.imagebox()
-wifi_icon:set_image(beautiful.widget_wifi)
+wifi_icon:set_image(beautiful.widget_netw)
 wifi_widget = wibox.widget.textbox()
-
+wifi_widgetbg = wibox.widget.background(wifi_widget, "#313131")
+wifi_iconbg = wibox.widget.background(wifi_icon, "#313131")
 vicious.register(wifi_widget, vicious.widgets.wifi,
 	function(widget, args)
 		local quality = 0

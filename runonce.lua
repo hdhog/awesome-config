@@ -8,5 +8,5 @@ function run_once(prg, args)
 	if not args then
 		args=""
 	end
-	awful.util.spawn_with_shell('pgrep -f -u $USER -x ' .. prg .. ' || (' .. prg .. ' ' .. args ..'& )')
+	awful.util.spawn_with_shell('/bin/sh -c "pgrep -f -u $USER -x ' .. prg .. ' || (' .. prg .. ' ' .. args ..'& )"')
 end
